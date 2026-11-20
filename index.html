@@ -674,7 +674,7 @@ async function send() {
   const s = summary(), name = st.a.name || "Atleta";
   const subject = `Nuevo atleta: ${name} · ${ES_PATH[st.path]}` + (s["Salud"].startsWith("REVISAR") ? " · REVISAR SALUD" : "");
   const body = {access_key: FORM_KEY, subject, from_name: BRAND, replyto: st.a.email || "", botcheck: "",
-    ...s, "Bloque para el coach (pegar en Claude)": block()};
+    ...s, "Código de registro": block()};
   const r = await fetch("https://api.web3forms.com/submit", {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify(body)});
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.success) throw new Error(j.message || "send failed");
