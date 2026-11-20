@@ -183,7 +183,7 @@ details[open] summary { margin-bottom: 10px }
 const BRAND = "Team Coach";
 /* Web3Forms access key (web3forms.com, free). It only lets this form email the coach; it's public by design.
    Empty = no automatic email, athletes send on WhatsApp instead. Inside claude.ai the send is blocked and falls back too. */
-const FORM_KEY = "";
+const FORM_KEY = /\.github\.io$/.test(location.hostname) ? "fd6935b4-2170-468d-92b2-a93427f18dab" : "";   // add a custom domain here later
 
 const L = (es, en) => ({es, en});
 const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
