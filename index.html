@@ -657,7 +657,7 @@ function groups() {   // [[section, [[label, value], ...]], ...] in Spanish, for
         rows.push(["Cuestionario de salud", flagged.length ? "REVISAR: " + flagged.join("; ") : "Ninguna aplica"]); return;
       }
       const v = q.type === "trips" ? tripsText("es") : st.a[q.id];
-      if (v) rows.push([q.l.es, fmt(q, v)]);
+      if (v) rows.push([(q.l || sc.h).es.replace(/\.$/, ""), fmt(q, v)]);
     });
     if (sc.key === "consent") rows.push(["Consentimiento", st.a.consent === "yes" ? "Aceptado" : "NO"]);
     if (rows.length) out.push([sc.eyebrow.es, rows]);
