@@ -74,6 +74,13 @@ h2 { font-size: clamp(2.2rem, 9vw, 3.2rem) }
 .q > legend, .q > label { font: 800 15px var(--display); font-stretch: 90%; text-transform: uppercase; letter-spacing: .03em; padding: 0 }
 .q legend { margin-bottom: 10px }
 .hint { color: var(--muted); font-size: 14px; margin-top: -4px }
+.auto { margin-left: 8px; font: 700 10px var(--mono); letter-spacing: .08em; padding: 2px 6px; background: var(--olive); color: var(--bg); vertical-align: 2px; cursor: help }
+.trip { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 8px; align-items: end }
+.trip label { font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: grid; gap: 4px; min-width: 0 }
+.trip button { background: none; border: 0; color: var(--muted); font: 500 12px var(--mono); text-transform: uppercase; cursor: pointer; padding: 12px 0 }
+.trips { display: grid; gap: 12px }
+.trips .add { justify-self: start }
+@media (max-width: 520px) { .trip { grid-template-columns: 1fr 1fr } .trip label:first-child { grid-column: 1 / -1 } }
 .opt { color: var(--muted); font: 500 11px var(--mono); letter-spacing: .06em; margin-left: 8px; text-transform: uppercase }
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px }
 input[type=text], input[type=email], input[type=number], input[type=date], textarea {
@@ -210,6 +217,10 @@ const T = {
   required: L("Responde esta pregunta para continuar.","Answer this to continue."),
   emailBad: L("Revisa tu correo, parece incompleto.","Check your email, it looks incomplete."),
   optional: L("opcional","optional"),
+  autoTip: L("Lo podemos sacar de Garmin Connect, intervals.icu o TrainingPeaks","We can pull this from Garmin Connect, intervals.icu or TrainingPeaks"),
+  sameDay: L("La larga y la sesión intensa tienen que ser en días distintos.","The long run and the hard session must be on different days."),
+  noTrips: L("No tengo viajes planeados","No trips planned"), city: L("Ciudad","City"), from: L("Del","From"), to: L("Al","To"),
+  addTrip: L("+ Otro viaje","+ Another trip"), removeTrip: L("Quitar","Remove"),
   doneEyebrow: L("Listo","All set"),
   doneH: L("Listo. <em>Último paso.</em>","Done. <em>One last step.</em>"),
   doneP: L("Envía tus respuestas a tu coach por WhatsApp. Toca el botón, elige a tu coach y envía el mensaje tal cual.",
@@ -286,13 +297,20 @@ const S_WATCH_BEG = {key:"watch", eyebrow:L("Tu reloj","Your watch"), h:L("Tu re
     ["daily",L("Cada día","Every day"),L("La sesión del día, por la mañana.","That day's session, in the morning.")],
     ["weekly",L("Una vez a la semana","Once a week"),L("Un resumen el lunes.","A summary on Monday.")]]},
 ]};
-const S_RUNNING = {key:"running", eyebrow:L("Tu historial","Your running"), h:L("Cuéntanos cómo corres.","Tell us how you run."), q:[
-  {grid:[{id:"km_week_3m",type:"number",req:1,l:L("Km por semana","Km per week"),h:L("Promedio de los últimos 3 meses.","Average over the last 3 months.")},
-         {id:"longest_run_recent_km",type:"number",l:L("Tu carrera más larga del mes (km)","Longest run this month (km)")}]},
-  {grid:[{id:"years_running",type:"text",l:L("Años corriendo","Years running")},{id:"km_week_max",type:"number",l:L("Máximo de km en una semana","Most km in one week")}]},
-  {grid:[{id:"best_5k",type:"text",l:L("Mejor 5K reciente","Best recent 5K"),h:L("mm:ss","mm:ss"),ph:"24:30"},{id:"best_10k",type:"text",l:L("Mejor 10K reciente","Best recent 10K"),h:L("mm:ss","mm:ss"),ph:"51:00"}]},
-  {grid:[{id:"best_hm",type:"text",l:L("Mejor medio maratón","Best half marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"1:52:00"},{id:"best_m",type:"text",l:L("Mejor maratón","Best marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"3:59:00"}]},
-  {id:"best_race_date",type:"date",l:L("Fecha de tu carrera más reciente","Date of your most recent race")},
+const TRAIN_TYPES = [["easy",L("Rodajes suaves","Easy runs")],["long",L("Tiradas largas","Long runs")],["intervals",L("Series / intervalos","Intervals")],
+  ["tempo",L("Tempo / ritmo sostenido","Tempo runs")],["hills",L("Cuestas","Hills")],["track",L("Pista","Track")],["trail",L("Trail / montaña","Trail")],
+  ["treadmill",L("Caminadora","Treadmill")],["group",L("Correr en grupo","Group runs")],["strength",L("Fuerza / gimnasio","Strength / gym")]];
+const S_RUNNING = {key:"running", eyebrow:L("Tu historial","Your running"), h:L("Cuéntanos cómo corres.","Tell us how you run."),
+  p:L("Lo marcado AUTO lo podemos sacar de Garmin Connect, intervals.icu o TrainingPeaks cuando conectes tu cuenta. Si no lo sabes exacto, un aproximado basta.",
+      "Anything marked AUTO we can pull from Garmin Connect, intervals.icu or TrainingPeaks once you connect. If you're not sure, a rough answer is fine."), q:[
+  {id:"km_week_3m",type:"one",req:1,auto:1,l:L("¿Cuántos km corres por semana?","How many km do you run per week?"),h:L("Promedio de los últimos 3 meses.","Average over the last 3 months."),
+    opts:[["5",L("Menos de 10","Under 10")],["15",L("10–20","10–20")],["27",L("20–35","20–35")],["42",L("35–50","35–50")],["60",L("50–70","50–70")],["80",L("Más de 70","Over 70")]]},
+  {id:"years_running",type:"one",l:L("¿Cuánto tiempo llevas corriendo?","How long have you been running?"),
+    opts:[["<1",L("Menos de 1 año","Under 1 year")],["1-3",L("1–3 años","1–3 years")],["3-5",L("3–5 años","3–5 years")],["5+",L("Más de 5 años","Over 5 years")]]},
+  {id:"longest_run_recent_km",type:"number",auto:1,l:L("Tu carrera más larga del último mes (km)","Longest run in the last month (km)")},
+  {grid:[{id:"best_5k",type:"text",auto:1,l:L("Mejor 5K reciente","Best recent 5K"),h:L("mm:ss","mm:ss"),ph:"24:30"},{id:"best_10k",type:"text",auto:1,l:L("Mejor 10K reciente","Best recent 10K"),h:L("mm:ss","mm:ss"),ph:"51:00"}]},
+  {grid:[{id:"best_hm",type:"text",auto:1,l:L("Mejor medio maratón","Best half marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"1:52:00"},{id:"best_m",type:"text",auto:1,l:L("Mejor maratón","Best marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"3:59:00"}]},
+  {id:"best_race_date",type:"date",auto:1,l:L("Fecha de tu carrera más reciente","Date of your most recent race")},
 ]};
 const S_OTHER = {key:"other", eyebrow:L("Otros deportes","Other sports"), h:L("Lo que haces además de correr.","What you do besides running."), q:[
   {id:"gym_days",type:"days",l:L("Gimnasio","Gym")},
@@ -312,28 +330,36 @@ const S_GOAL_RUN = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("¿Hacia d
 ]};
 const S_WEEK_RUN = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("Tu disponibilidad.","Your availability."), q:[
   {id:"run_days",type:"days",req:1,l:L("Días que puedes correr","Days you can run")},
-  {id:"long_run_day",type:"day1",l:L("Día para la carrera larga","Long-run day")},
-  {id:"quality_day",type:"day1",l:L("Día para una sesión intensa","Day for a hard session")},
+  {id:"long_run_day",type:"day1",l:L("Día para la carrera larga","Long-run day"),h:L("Tu carrera más larga de la semana, a ritmo cómodo.","Your longest run of the week, at an easy pace.")},
+  {id:"quality_day",type:"day1",l:L("Día para la sesión intensa","Hard-session day"),
+    h:L("Series, tempo o cuestas: la sesión más exigente. Tiene que ser otro día que la larga, idealmente con un día de por medio, para que llegues fresco a las dos.",
+        "Intervals, tempo or hills: the toughest session. It must be a different day from the long run, ideally with a day in between, so you arrive fresh for both.")},
   {id:"time_of_day",type:"one",l:L("Horario habitual","Usual time of day"),opts:[["morning",L("Mañana","Morning")],["midday",L("Mediodía","Midday")],["evening",L("Tarde o noche","Evening")],["varies",L("Varía","It varies")]]},
-  {grid:[{id:"max_weekday_min",type:"number",l:L("Máx. minutos entre semana","Max minutes, weekdays")},{id:"max_weekend_min",type:"number",l:L("Máx. minutos fin de semana","Max minutes, weekends")}]},
-  {id:"commitments",type:"textarea",l:L("Compromisos fijos","Fixed commitments"),h:L("Clases, trabajo, familia.","Classes, work, family.")},
-  {id:"travel",type:"textarea",l:L("Viajes ya planeados","Planned travel"),h:L("Con fechas.","With dates.")},
+  {id:"max_weekday_min",type:"one",l:L("Tiempo por sesión entre semana","Time per session on weekdays"),h:L("Lo que tienes para UNA sesión, no el total de la semana.","What you have for ONE session, not the week's total."),
+    opts:[["30",L("Hasta 30 min","Up to 30 min")],["45",L("30–45 min","30–45 min")],["60",L("45–60 min","45–60 min")],["90",L("Más de 1 h","Over 1 h")]]},
+  {id:"max_weekend_min",type:"one",l:L("Tiempo para la carrera larga","Time for the long run"),h:L("Lo máximo que puedes dedicar a esa sesión.","The most you can give that one session."),
+    opts:[["60",L("Hasta 1 h","Up to 1 h")],["90",L("1–1.5 h","1–1.5 h")],["120",L("1.5–2 h","1.5–2 h")],["180",L("Más de 2 h","Over 2 h")]]},
+  {id:"commitments",type:"many",l:L("Tu día a día","Your day-to-day"),h:L("Elige las que apliquen.","Pick any that apply."),opts:[
+    ["office",L("Trabajo con horario fijo","Fixed work hours")],["flex",L("Horario flexible / home office","Flexible hours / remote")],
+    ["shifts",L("Mi horario cambia cada semana","My schedule changes week to week")],["night",L("Trabajo de noche","I work nights")],
+    ["student",L("Estudiante","Student")],["family",L("Hijos o familia a mi cargo","Kids or family to care for")],
+    ["travel_work",L("Viajo seguido por trabajo","I travel often for work")],["other",L("Otro","Other")]]},
+  {id:"commitments_other",type:"text",l:L("¿Cuál?","Which?"),show:a=>(a.commitments||"").split(", ").includes("other")},
+  {id:"travel",type:"trips",l:L("Viajes ya planeados","Planned trips")},
 ]};
 const S_RECOVERY = {key:"recovery", eyebrow:L("Recuperación","Recovery"), h:L("Descanso y día a día.","Rest and everyday life."), q:[
-  {id:"sleep_hours",type:"number",l:L("Horas de sueño promedio","Average hours of sleep")},
-  {id:"stress",type:"one",l:L("Estrés en el trabajo","Work stress"),opts:[["low",L("Bajo","Low")],["medium",L("Medio","Medium")],["high",L("Alto","High")]]},
-  {id:"shift_work",type:"one",l:L("¿Trabajas turnos o de noche?","Shift or night work?"),opts:YN},
-  {id:"alcohol",type:"one",l:L("Alcohol","Alcohol"),opts:[["never",L("Nunca","Never")],["occasional",L("Ocasional","Occasional")],["weekly",L("Semanal","Weekly")],["frequent",L("Frecuente","Frequent")]]},
-  {id:"after_hard_weeks",type:"textarea",l:L("¿Cómo te sientes después de semanas pesadas?","How do you feel after hard weeks?")},
+  {id:"sleep_hours",type:"one",auto:1,l:L("¿Cuánto duermes por noche?","How much do you sleep a night?"),opts:[["5.5",L("Menos de 6 h","Under 6 h")],["6.5",L("6–7 h","6–7 h")],["7.5",L("7–8 h","7–8 h")],["8.5",L("Más de 8 h","Over 8 h")]]},
+  {id:"stress",type:"one",l:L("Estrés en el trabajo o escuela","Work or school stress"),opts:[["low",L("Bajo","Low")],["medium",L("Medio","Medium")],["high",L("Alto","High")]]},
+  {id:"alcohol",type:"one",l:L("Alcohol","Alcohol"),opts:[["never",L("Nunca","Never")],["occasional",L("Ocasional","Occasional")],["weekly",L("Cada semana","Weekly")],["frequent",L("Varias veces por semana","Several times a week")]]},
 ]};
 const S_WATCH_RUN = {key:"watch", eyebrow:L("Reloj y preferencias","Watch and preferences"), h:L("Tu reloj y tus gustos.","Your watch and what you like."), q:[
   WATCH_BRAND, WATCH_MODEL,
-  {id:"garmin_connect",type:"one",l:L("¿Usas la app Garmin Connect?","Do you use the Garmin Connect app?"),opts:YN,show:a=>a.watch_brand==="garmin"},
-  {grid:[{id:"max_hr",type:"number",l:L("FC máxima, si la sabes","Max heart rate, if known")},{id:"rest_hr",type:"number",l:L("FC en reposo al despertar","Resting HR on waking")}]},
+  {id:"platforms",type:"many",l:L("¿Qué apps usas?","Which apps do you use?"),h:L("Con estas podemos sacar tu historial, ritmos y frecuencia cardiaca automáticamente.","These let us pull your history, paces and heart rate automatically."),
+    opts:[["garmin_connect",L("Garmin Connect","Garmin Connect")],["intervals",L("intervals.icu","intervals.icu")],["trainingpeaks",L("TrainingPeaks","TrainingPeaks")],["strava",L("Strava","Strava")],["none",L("Ninguna","None")]]},
   {id:"email_frequency",type:"one",stack:1,req:1,l:L("Recordatorios por correo","Email reminders"),opts:[
     ["daily",L("Cada día","Every day"),L("La sesión del día.","That day's session.")],["weekly",L("Semanal","Weekly"),L("Un resumen el lunes.","A summary on Monday.")]]},
-  {id:"likes",type:"textarea",l:L("¿Qué te gusta entrenar?","What do you enjoy training?")},
-  {id:"dislikes",type:"textarea",l:L("¿Qué no te gusta?","What do you dislike?")},
+  {id:"likes",type:"many",l:L("¿Qué tipo de entrenamiento disfrutas más?","Which kinds of training do you enjoy most?"),opts:TRAIN_TYPES},
+  {id:"dislikes",type:"many",l:L("¿Qué tipo de entrenamiento prefieres evitar?","Which kinds of training would you rather avoid?"),opts:TRAIN_TYPES},
 ]};
 const S_CONNECT = {key:"connect", eyebrow:L("Conexión","Connection"), h:L("Conecta tu reloj.","Connect your watch."),
   p:L("Tus entrenamientos llegan a Garmin a través de intervals.icu, un servicio gratuito. Puedes hacerlo ahora o con tu coach en la llamada.",
@@ -384,10 +410,12 @@ function el(tag, attrs = {}, kids = []) {
 const visible = q => !q.show || q.show(st.a);
 const flatQ = sc => sc.q.flatMap(q => q.grid ? (visible(q) ? q.grid : []) : (visible(q) ? [q] : []));
 
+function keepScroll(fn) { const y = scrollY; fn(); scrollTo(0, y); }
 /* ---- Field renderers ---- */
 function label(q, tag, forId) {
   const n = el(tag, forId ? {for: forId} : {}, [document.createTextNode(t(q.l))]);
-  if (!q.req && q.type !== "consent") n.append(el("span", {class: "opt", text: t(T.optional)}));
+  if (q.auto) n.append(el("span", {class: "auto", title: t(T.autoTip), text: "AUTO"}));
+  else if (!q.req && q.type !== "consent") n.append(el("span", {class: "opt", text: t(T.optional)}));
   return n;
 }
 function chipGroup(q, type, opts) {
@@ -419,6 +447,31 @@ function field(q) {
   if (q.type === "consent") {
     const i = el("input", {type: "checkbox", id, name: "consent", value: "yes"}); i.checked = st.a.consent === "yes";
     return el("div", {class: "q", "data-q": "consent"}, [el("label", {class: "consent"}, [i, el("span", {text: t(q.l)})])]);
+  }
+  if (q.type === "trips") {
+    const fs = el("fieldset", {class: "q", "data-q": q.id});
+    fs.append(label(q, "legend"));
+    const none = el("input", {type: "checkbox", name: "no_trips", value: "yes", id: "q-no-trips"}); none.checked = st.a.no_trips === "yes";
+    fs.append(el("div", {class: "chips"}, [el("label", {class: "chip"}, [none, el("span", {text: t(T.noTrips)})])]));
+    if (st.a.no_trips !== "yes") {
+      const trips = (st.a.trips && st.a.trips.length) ? st.a.trips : [{city: "", from: "", to: ""}];
+      const list = el("div", {class: "trips"});
+      trips.forEach((tr, i) => {
+        const inp = (k, type, ph) => { const x = el("input", {type, name: `trip_${k}_${i}`, id: `q-trip-${k}-${i}`, placeholder: ph || null, autocomplete: "off"}); x.value = tr[k] || ""; return x; };
+        const row = el("div", {class: "trip"}, [
+          el("label", {}, [document.createTextNode(t(T.city)), inp("city", "text", st.lang === "es" ? "Monterrey" : "Austin")]),
+          el("label", {}, [document.createTextNode(t(T.from)), inp("from", "date")]),
+          el("label", {}, [document.createTextNode(t(T.to)), inp("to", "date")])]);
+        if (trips.length > 1) { const rm = el("button", {type: "button", text: t(T.removeTrip)}); rm.addEventListener("click", () => { st.a.trips = trips.filter((_, j) => j !== i); save(); keepScroll(render); }); row.append(rm); }
+        else row.append(el("span"));
+        list.append(row);
+      });
+      const add = el("button", {type: "button", class: "btn line add", id: "add-trip", text: t(T.addTrip)});
+      add.addEventListener("click", () => { st.a.trips = [...trips, {city: "", from: "", to: ""}]; save(); keepScroll(render); });
+      list.append(add);
+      fs.append(list);
+    }
+    return fs;
   }
   if (q.type === "parq") {
     const fs = el("div", {class: "q", "data-q": "parq"});
@@ -528,6 +581,12 @@ function render() {
 form.addEventListener("input", e => {
   const n = e.target; if (!n.name) return;
   const a = st.a;
+  const tm = n.name.match(/^trip_(city|from|to)_(\d+)$/);
+  if (tm) {
+    const trips = (a.trips && a.trips.length) ? a.trips : [{city: "", from: "", to: ""}];
+    trips[+tm[2]] = {...trips[+tm[2]], [tm[1]]: n.value.trim()}; a.trips = trips; save(true); return;
+  }
+  if (n.name === "no_trips") { a.no_trips = n.checked ? "yes" : ""; save(true); keepScroll(render); return; }
   if (n.name === "parq_item") {
     a[n.value] = n.checked ? "yes" : "";
     if (n.checked) { a.parq_none = ""; const x = document.getElementById("q-parq-none"); if (x) x.checked = false; }
@@ -540,7 +599,7 @@ form.addEventListener("input", e => {
   else a[n.name] = n.type === "radio" ? n.value : n.value.trim();
   const box = n.closest("[data-q]"); if (box) box.classList.remove("bad");
   const msg = document.getElementById("msg"); if (msg) msg.textContent = "";
-  if (n.type === "radio") {               // conditional questions may appear or disappear
+  if (n.type === "radio" || n.type === "checkbox") {   // conditional questions may appear or disappear
     const sc = FLOWS[st.path][st.step];
     if (sc.q.some(q => q.show)) { const y = scrollY; render(); scrollTo(0, y); }
   }
@@ -556,6 +615,9 @@ function validate() {
     else if (q.req) ok = !!a[q.id];
     if (ok && q.type === "email" && a[q.id]) { ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(a[q.id]); if (!ok) msg = t(T.emailBad); }
     if (!ok) { const b = form.querySelector(`[data-q="${q.id}"]`); if (b) b.classList.add("bad"); first = first || b; }
+  }
+  if (!first && a.long_run_day && a.long_run_day === a.quality_day && flatQ(sc).some(q => q.id === "quality_day")) {
+    first = form.querySelector('[data-q="quality_day"]'); first.classList.add("bad"); msg = t(T.sameDay);
   }
   if (first) { document.getElementById("msg").textContent = msg; first.scrollIntoView({block: "center", behavior: "smooth"}); const f = first.querySelector("input,textarea"); if (f) f.focus({preventScroll: true}); }
   return !first;
@@ -579,23 +641,40 @@ function fmt(q, v) {
   if (q.opts) return v.split(", ").map(x => { const o = q.opts.find(o => o[0] === x); return o ? o[1].es : x; }).join(", ");
   return v;
 }
-function summary() {
-  const rows = {"Ruta": ES_PATH[st.path]};
-  const flagged = PARQ.filter(([k]) => st.a[k] === "yes").map(([, l]) => l.es);
-  rows["Salud"] = flagged.length ? "REVISAR: " + flagged.join("; ") : "Ninguna aplica";
-  FLOWS[st.path].forEach(sc => flatQ(sc).forEach(q => {
-    if (!q.l || q.type === "parq" || q.type === "steps" || q.type === "consent") return;
-    const v = st.a[q.id]; if (!v) return;
-    rows[q.l.es] = fmt(q, v);
-  }));
-  rows["Consentimiento"] = st.a.consent === "yes" ? "Aceptado" : "NO";
+function tripsText(lang) {
+  if (st.a.no_trips === "yes") return lang === "es" ? "Ninguno" : "None";
+  return (st.a.trips || []).filter(x => x.city || x.from || x.to)
+    .map(x => `${x.city || "?"} (${x.from || "?"} → ${x.to || "?"})`).join("; ");
+}
+function groups() {   // [[section, [[label, value], ...]], ...] in Spanish, for JP
+  const out = [["Ruta", [["Ruta", ES_PATH[st.path]]]]];
+  FLOWS[st.path].forEach(sc => {
+    const rows = [];
+    flatQ(sc).forEach(q => {
+      if (q.type === "steps" || q.type === "consent") return;
+      if (q.type === "parq") {
+        const flagged = PARQ.filter(([k]) => st.a[k] === "yes").map(([, l]) => l.es);
+        rows.push(["Cuestionario de salud", flagged.length ? "REVISAR: " + flagged.join("; ") : "Ninguna aplica"]); return;
+      }
+      const v = q.type === "trips" ? tripsText("es") : st.a[q.id];
+      if (v) rows.push([q.l.es, fmt(q, v)]);
+    });
+    if (sc.key === "consent") rows.push(["Consentimiento", st.a.consent === "yes" ? "Aceptado" : "NO"]);
+    if (rows.length) out.push([sc.eyebrow.es, rows]);
+  });
+  return out;
+}
+function summary() {   // flat rows for the email
+  const rows = {};
+  groups().forEach(([, rs]) => rs.forEach(([l, v]) => { rows[l] = v; }));
+  rows["Salud"] = rows["Cuestionario de salud"]; delete rows["Cuestionario de salud"];
   return rows;
 }
 async function send() {
   const s = summary(), name = st.a.name || "Atleta";
   const subject = `Nuevo atleta: ${name} · ${ES_PATH[st.path]}` + (s["Salud"].startsWith("REVISAR") ? " · REVISAR SALUD" : "");
   const body = {access_key: FORM_KEY, subject, from_name: BRAND, replyto: st.a.email || "", botcheck: "",
-    ...s, "Bloque para el coach (pegar en Claude)": message()};
+    ...s, "Bloque para el coach (pegar en Claude)": block()};
   const r = await fetch("https://api.web3forms.com/submit", {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify(body)});
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.success) throw new Error(j.message || "send failed");
@@ -623,8 +702,20 @@ function payload() {
     if (a.session_time) out.max_weekday_min = out.max_weekend_min = a.session_time;
   } else {
     out.runs_continuous_30min = "yes";
+    const label = (opts, v) => (v || "").split(", ").filter(Boolean).map(x => (opts.find(o => o[0] === x) || [x, {es: x}])[1].es).join(", ");
+    const cq = S_WEEK_RUN.q.find(q => q.id === "commitments");
+    const c = (a.commitments || "").split(", ");
+    if (c.includes("shifts") || c.includes("night")) out.shift_work = "yes";
+    out.commitments = [label(cq.opts, (a.commitments || "").split(", ").filter(x => x !== "other").join(", ")), a.commitments_other].filter(Boolean).join(", ");
+    delete a.commitments; delete a.commitments_other;
+    if (a.likes) { out.likes = label(TRAIN_TYPES, a.likes); delete a.likes; }
+    if (a.dislikes) { out.dislikes = label(TRAIN_TYPES, a.dislikes); delete a.dislikes; }
+    const tt = tripsText("es"); if (tt) out.travel = tt;
+    if ((a.platforms || "").includes("garmin_connect")) out.garmin_connect = "yes";
     if (a.goal_type !== "race") { delete a.race_name; delete a.race_date; delete a.race_distance; delete a.target_time; }
   }
+  delete a.trips; delete a.no_trips;
+  if (!out.commitments) delete out.commitments;
   if (a.setup !== "now") delete a.icu_athlete_id;
   if (a.watch_brand) {
     const names = {garmin:"Garmin",apple:"Apple Watch",coros:"COROS",suunto:"Suunto",polar:"Polar",other:"",none:"none"};
@@ -634,8 +725,18 @@ function payload() {
   for (const [k, v] of Object.entries(a)) if (v !== "" && v != null && !(k in out)) out[k] = v;
   return out;
 }
-function message() {
-  return t(T.msgIntro) + "\n\nTEAM-COACH-INTAKE-START\n" + JSON.stringify(payload()) + "\nTEAM-COACH-INTAKE-END";
+function block() {   // machine block for the athlete-profile skill (email only)
+  return "TEAM-COACH-INTAKE-START\n" + JSON.stringify(payload()) + "\nTEAM-COACH-INTAKE-END";
+}
+function message() {   // readable WhatsApp message, formatted like a form
+  const lines = [`*${BRAND.toUpperCase()} · FICHA DE INSCRIPCIÓN*`, t(T.msgIntro), ""];
+  groups().slice(1).forEach(([sec, rows]) => {
+    lines.push(`*${sec.toUpperCase()}*`);
+    rows.forEach(([l, v]) => lines.push(`• ${l.replace(/[¿?]/g, "")}: ${v}`));
+    lines.push("");
+  });
+  lines.push(`_Ruta: ${ES_PATH[st.path]} · Enviado ${new Date().toISOString().slice(0, 10)}_`);
+  return lines.join("\n");
 }
 
 if (st.done && st.sendState === "sending") st.sendState = "failed";   // interrupted send: offer retry, never resend silently
