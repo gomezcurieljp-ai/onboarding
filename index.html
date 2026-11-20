@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Team Coach Onboarding</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: athletic training-app feel. Heavy condensed uppercase headlines, mono "stopwatch" labels, square edges,
+   one step per screen, segmented progress, a fixed action bar. Ink + bone, olive as the team colour, hi-vis orange for actions. */
+:root {
+  --bg: #f3f3ef; --surface: #ffffff; --ink: #0d0e0c; --muted: #5c5f57; --line: #d4d6ce;
+  --olive: #4a5a2b; --hot: #ff5a1f; --hot-ink: #0d0e0c; --inv: #0d0e0c; --inv-ink: #f3f3ef; --warn: #c2290a;
+  --display: "Archivo", "Arial Narrow", Impact, system-ui, sans-serif;
+  --body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b0c0a; --surface: #151713; --ink: #f2f2ec; --muted: #9a9d93; --line: #2b2e27;
+  --olive: #a3b86d; --hot: #ff6a33; --hot-ink: #0b0c0a; --inv: #f2f2ec; --inv-ink: #0b0c0a; --warn: #ff7a59; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0b0c0a; --surface: #151713; --ink: #f2f2ec; --muted: #9a9d93; --line: #2b2e27;
+  --olive: #a3b86d; --hot: #ff6a33; --hot-ink: #0b0c0a; --inv: #f2f2ec; --inv-ink: #0b0c0a; --warn: #ff7a59; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--body); font-stretch: 100%; -webkit-font-smoothing: antialiased }
+.wrap { max-width: 640px; margin: 0 auto; padding-block: 18px 128px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* top bar */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 14px; border-bottom: 3px solid var(--ink) }
+.mark { display: flex; align-items: center; gap: 10px; min-width: 0 }
+.mark svg { flex: none }
+.mark b { font: 900 18px/1 var(--display); font-stretch: 75%; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap }
+.lang { display: flex; border: 2px solid var(--ink); flex: none }
+.lang button { border: 0; background: transparent; color: var(--ink); padding: 5px 10px; font: 700 12px var(--mono); letter-spacing: .08em; cursor: pointer }
+.lang button[aria-pressed="true"] { background: var(--inv); color: var(--inv-ink) }
+
+/* progress: stopwatch label + thick bar */
+.prog { display: flex; align-items: center; gap: 14px; margin-top: 24px; font: 700 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; font-variant-numeric: tabular-nums }
+.prog .rule { flex: 1; height: 6px; background: var(--line); position: relative; overflow: hidden }
+.prog .rule span { position: absolute; inset: 0 auto 0 0; background: var(--hot); transition: width .35s cubic-bezier(.2,.8,.2,1) }
+
+/* type */
+.eyebrow { display: flex; align-items: center; gap: 10px; font: 700 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--olive); margin: 0 }
+.eyebrow::before { content: ""; width: 22px; height: 3px; background: currentColor }
+h1, h2 { font-family: var(--display); font-weight: 900; font-stretch: 72%; text-transform: uppercase; letter-spacing: .005em; text-wrap: balance; margin: 0; line-height: .92 }
+h1 { font-size: clamp(3rem, 13vw, 5rem) }
+h1 em { font-style: normal; color: var(--hot) }
+h2 { font-size: clamp(2.2rem, 9vw, 3.2rem) }
+.lede { color: var(--muted); margin: 0; max-width: 50ch; font-size: 17px }
+.screen { display: grid; gap: 28px; margin-top: 32px }
+.screen > header { display: grid; gap: 14px }
+
+/* path cards */
+.paths { display: grid; gap: 12px }
+.path { text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; align-items: center; width: 100%;
+  background: var(--surface); color: var(--ink); border: 2px solid var(--ink); border-radius: 0; padding: 20px; cursor: pointer; font: inherit;
+  transition: background .15s, color .15s, transform .15s; box-shadow: 5px 5px 0 var(--ink) }
+.path:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink) }
+.path:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink) }
+.path strong { font: 900 1.9rem/1 var(--display); font-stretch: 72%; text-transform: uppercase }
+.path small { grid-column: 1; color: var(--muted); font-size: 15px }
+.path i { grid-row: 1 / span 2; grid-column: 2; font-style: normal; font: 700 12px var(--mono); letter-spacing: .08em; background: var(--hot); color: var(--hot-ink); padding: 6px 8px; white-space: nowrap }
+.reassure { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding: 20px 0 0; border-top: 2px solid var(--ink); margin: 0; list-style: none }
+.reassure li { font-size: 14px; color: var(--muted) }
+.reassure b { display: block; color: var(--ink); font: 800 15px var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .03em }
+
+/* fields */
+.q { display: grid; gap: 10px; min-width: 0; border: 0; padding: 0; margin: 0 }
+.q > legend, .q > label { font: 800 15px var(--display); font-stretch: 90%; text-transform: uppercase; letter-spacing: .03em; padding: 0 }
+.q legend { margin-bottom: 10px }
+.hint { color: var(--muted); font-size: 14px; margin-top: -4px }
+.opt { color: var(--muted); font: 500 11px var(--mono); letter-spacing: .06em; margin-left: 8px; text-transform: uppercase }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px }
+input[type=text], input[type=email], input[type=number], input[type=date], textarea {
+  width: 100%; font: 500 16px var(--body); color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 0; padding: 12px 14px; }
+input:hover, textarea:hover { border-color: var(--muted) }
+input:focus, textarea:focus { border-color: var(--ink); outline: none }
+textarea { min-height: 84px; resize: vertical }
+:focus-visible { outline: 3px solid var(--hot); outline-offset: 2px }
+.chips { display: flex; flex-wrap: wrap; gap: 8px }
+.chips.stack { flex-direction: column }
+.chip { position: relative; display: block }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer }
+.chip span { display: block; border: 2px solid var(--line); padding: 10px 16px; font-weight: 600; font-size: 15px; background: var(--surface); transition: background .12s, border-color .12s, color .12s }
+.chips.stack .chip span { padding: 14px 16px; font: 800 18px/1.15 var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .01em }
+.chip span small { display: block; color: var(--muted); font: 400 14px/1.4 var(--body); font-stretch: 100%; text-transform: none; letter-spacing: 0; margin-top: 4px }
+.chip input:hover + span { border-color: var(--ink) }
+.chip input:checked + span { background: var(--inv); border-color: var(--inv); color: var(--inv-ink) }
+.chip input:checked + span small { color: inherit; opacity: .75 }
+.chips.stack .chip input:checked + span { box-shadow: inset 6px 0 0 var(--hot) }
+.chip input:focus-visible + span { outline: 3px solid var(--hot); outline-offset: 2px }
+.days .chip span { min-width: 54px; text-align: center; padding: 10px 0; font: 700 13px var(--mono); text-transform: uppercase }
+.bad input[type], .bad textarea, .bad .chip span, .bad .checks { border-color: var(--warn) }
+.msg { color: var(--warn); font: 700 14px var(--body); margin: 0 }
+.msg:empty { display: none }
+
+/* health list */
+.checks { display: grid; border: 2px solid var(--ink); background: var(--surface) }
+.check { display: grid; grid-template-columns: 22px 1fr; gap: 14px; align-items: start; padding: 14px 16px; border-top: 1px solid var(--line); cursor: pointer }
+.check:first-child { border-top: 0 }
+.check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--hot) }
+.check.none { background: var(--inv); color: var(--inv-ink); font: 800 16px var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .03em; border-top: 0 }
+.note { font-size: 15px; color: var(--muted); margin: 0; max-width: 52ch }
+
+/* setup steps */
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; counter-reset: s }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 40px 1fr; gap: 14px }
+.steps li::before { content: "0" counter(s); font: 900 1.8rem/1 var(--display); font-stretch: 72%; color: var(--hot) }
+.steps li > div { min-width: 0 }
+.steps b { display: block; font: 800 16px var(--display); font-stretch: 85%; text-transform: uppercase }
+.steps p { margin: 2px 0 0; color: var(--muted); font-size: 15px }
+.steps a, .link { color: var(--ink); font-weight: 700; text-decoration-color: var(--hot); text-decoration-thickness: 2px; text-underline-offset: 3px }
+code { font: 500 14px var(--mono); background: var(--line); padding: 1px 6px }
+
+/* consent */
+.consent { display: grid; grid-template-columns: 22px 1fr; gap: 14px; align-items: start; background: var(--surface); border: 2px solid var(--ink); padding: 18px; cursor: pointer }
+.consent input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--hot) }
+
+/* action bar */
+.nav { position: fixed; inset: auto 0 0; z-index: 5; background: var(--bg); border-top: 3px solid var(--ink);
+  padding-block: 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.nav > div { max-width: 640px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px }
+.btn { border-radius: 0; padding: 14px 26px; font: 900 17px/1 var(--display); font-stretch: 80%; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; border: 2px solid var(--ink); display: inline-block }
+.btn.primary { background: var(--hot); color: var(--hot-ink); border-color: var(--hot) }
+.btn.primary:hover { filter: brightness(1.06) }
+.btn.quiet { background: transparent; color: var(--muted); border-color: transparent; padding-inline: 4px; font-size: 15px }
+.btn.line { background: transparent; color: var(--ink) }
+.saved { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--olive) }
+
+/* done */
+.done-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center }
+.block { font: 12px/1.5 var(--mono); color: var(--muted); background: var(--surface); border: 2px solid var(--line); padding: 14px; max-height: 140px; overflow: auto; word-break: break-all; white-space: pre-wrap; margin: 0 }
+details summary { cursor: pointer; color: var(--muted); font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase }
+details[open] summary { margin-bottom: 10px }
+.next { margin: 0; padding: 0; list-style: none; display: grid; gap: 18px }
+.next li { display: grid; grid-template-columns: 40px 1fr; gap: 14px }
+.next li span { font: 900 1.8rem/1 var(--display); font-stretch: 72%; color: var(--hot) }
+.restart { background: none; border: 0; color: var(--muted); font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 0; justify-self: start }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="mark">
+      <!-- Placeholder mark: a stride chevron in a solid square. Swap for the final logo. -->
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" fill="var(--ink)"/><path d="M7 19 L13 9 L16 14 L21 9" fill="none" stroke="var(--hot)" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/></svg>
+      <b id="brand"></b>
+    </div>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button type="button" id="lang-es" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" id="lang-en" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+  <div class="prog" id="prog" hidden><span id="prog-label"></span><div class="rule"><span id="prog-bar"></span></div></div>
+  <form id="f" novalidate></form>
+</div>
+
+<div class="nav" id="nav" hidden>
+  <div>
+    <button type="button" class="btn quiet" id="back"></button>
+    <span class="saved" id="saved" aria-live="polite"></span>
+    <button type="submit" form="f" class="btn primary" id="next"></button>
+  </div>
+</div>
+
+<script>
+/* ---- Brand: change these two lines when the team name is chosen ---- */
+const BRAND = "Team Coach";
+/* Web3Forms access key (web3forms.com, free). It only lets this form email the coach; it's public by design.
+   Empty = no automatic email, athletes send on WhatsApp instead. Inside claude.ai the send is blocked and falls back too. */
+const FORM_KEY = "";
+
+const L = (es, en) => ({es, en});
+const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const DAY_SHORT = {es:["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"], en:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]};
+const YN = [["yes",L("Sí","Yes")],["no",L("No","No")]];
+const PARQ = [
+  ["parq_heart", L("Un médico me ha dicho que tengo un problema del corazón","A doctor has said I have a heart condition")],
+  ["parq_chest_pain", L("Siento dolor en el pecho al hacer ejercicio o en reposo","I get chest pain during exercise or at rest")],
+  ["parq_dizziness", L("Me mareo o he perdido el conocimiento","I get dizzy or have fainted")],
+  ["parq_bp", L("Tengo presión alta","I have high blood pressure")],
+  ["parq_diabetes", L("Tengo diabetes u otra condición metabólica","I have diabetes or another metabolic condition")],
+  ["parq_meds", L("Tomo medicamentos de forma regular","I take regular medication")],
+  ["parq_pregnancy", L("Estoy embarazada o en posparto","I'm pregnant or postpartum")],
+  ["parq_other", L("Hay otra razón médica por la que no debería hacer ejercicio","There's another medical reason I shouldn't exercise")],
+];
+
+const T = {
+  welcomeEyebrow: L("Temporada nueva · Plan nuevo","New season · New plan"),
+  welcomeH: L("Tu plan. Tu ritmo. <em>Empieza hoy.</em>","Your plan. Your pace. <em>Start today.</em>"),
+  welcomeP: L("Unas preguntas para conocerte. Con eso armamos tu primer bloque de cuatro semanas y lo enviamos directo a tu reloj.",
+              "A few questions so we can get to know you. Then we build your first four-week block and send it straight to your watch."),
+  pathQ: L("¿Dónde estás hoy?","Where are you today?"),
+  begT: L("Estoy empezando","I'm just starting"), begS: L("Nunca he corrido, o vuelvo después de mucho tiempo.","I've never run, or I'm coming back after a long break."), begI: L("5 min","5 min"),
+  runT: L("Ya corro","I already run"), runS: L("Corro con regularidad y puedo hacer 30 minutos seguidos.","I run regularly and can go 30 minutes non-stop."), runI: L("10 min","10 min"),
+  r1h: L("Sin contraseñas","No passwords"), r1p: L("Nunca te pedimos tu cuenta de Garmin.","We never ask for your Garmin login."),
+  r2h: L("Se guarda solo","Saves as you go"), r2p: L("Puedes cerrar y volver después.","Close it and come back any time."),
+  r3h: L("Privado","Private"), r3p: L("Tus respuestas solo van a tu coach.","Your answers only go to your coach."),
+  step: L("Paso","Step"), of: L("de","of"),
+  back: L("Atrás","Back"), next: L("Continuar","Continue"), finish: L("Terminar","Finish"),
+  saved: L("Guardado","Saved"),
+  required: L("Responde esta pregunta para continuar.","Answer this to continue."),
+  emailBad: L("Revisa tu correo, parece incompleto.","Check your email, it looks incomplete."),
+  optional: L("opcional","optional"),
+  doneEyebrow: L("Listo","All set"),
+  doneH: L("Listo. <em>Último paso.</em>","Done. <em>One last step.</em>"),
+  doneP: L("Envía tus respuestas a tu coach por WhatsApp. Toca el botón, elige a tu coach y envía el mensaje tal cual.",
+           "Send your answers to your coach on WhatsApp. Tap the button, pick your coach and send the message as it is."),
+  wa: L("Enviar por WhatsApp","Send on WhatsApp"), copy: L("Copiar mensaje","Copy message"),
+  copied: L("Copiado. Pégalo en el chat con tu coach.","Copied. Paste it into the chat with your coach."),
+  copyFail: L("Selecciona el texto de abajo y cópialo.","Select the text below and copy it."),
+  showMsg: L("Ver el mensaje","View the message"),
+  msgIntro: L("Hola, aquí están mis respuestas para empezar:","Hi, here are my answers to get started:"),
+  nextH: L("Qué sigue","What happens next"),
+  n1: L("Tu coach te escribe para una charla de 15 minutos.","Your coach reaches out for a 15-minute chat."),
+  n2: L("Recibes tu primer bloque de cuatro semanas. Cada semana se ajusta a lo que realmente hiciste.","You get your first four-week block. Each week adapts to what you actually did."),
+  n3: L("Los entrenamientos aparecen en tu reloj. Si no los ves, abre la app Garmin Connect para sincronizar.","Workouts appear on your watch. If you don't see them, open the Garmin Connect app to sync."),
+  sendingH: L("Enviando…","Sending…"),
+  sentH: L("Listo. <em>Ya llegó.</em>","Done. <em>It's in.</em>"),
+  sentP: L("Tus respuestas ya están con tu coach. Te escribimos pronto.","Your answers are with your coach. We'll be in touch soon."),
+  failP: L("No pudimos enviarlo automáticamente. Inténtalo otra vez o mándalo por WhatsApp.","We couldn't send it automatically. Try again, or send it on WhatsApp."),
+  retry: L("Reintentar envío","Try again"),
+  restart: L("Empezar de nuevo","Start over"), restartSure: L("Toca otra vez para borrar todo","Tap again to erase everything"),
+};
+
+/* ---- Screens ----
+   Field ids match coach/onboard.py. Beginner-only fields (activity, goal_choice, session_time, setup) are
+   translated into those ids in payload(). */
+const WATCH_BRAND = {id:"watch_brand",type:"one",req:1,l:L("¿Qué reloj tienes?","Which watch do you have?"),opts:[
+  ["garmin",L("Garmin","Garmin")],["apple",L("Apple Watch","Apple Watch")],["coros",L("COROS","COROS")],["suunto",L("Suunto","Suunto")],
+  ["polar",L("Polar","Polar")],["other",L("Otro","Other")],["none",L("No tengo reloj","No watch")]]};
+const WATCH_MODEL = {id:"watch_model",type:"text",l:L("Modelo o serie","Model or series"),
+  h:L("Por ejemplo: Forerunner 165, Series 9, Pace 3. Si no sabes, déjalo vacío.","For example: Forerunner 165, Series 9, Pace 3. Leave it blank if you're not sure."),
+  show:a=>a.watch_brand && a.watch_brand!=="none"};
+const S_ABOUT_BEG = {key:"about", eyebrow:L("Sobre ti","About you"), h:L("Empecemos por lo básico.","Let's start with the basics."), q:[
+  {id:"name",type:"text",req:1,l:L("¿Cómo te llamas?","What's your name?"),ac:"name"},
+  {id:"email",type:"email",req:1,l:L("Tu correo","Your email"),h:L("Aquí te llegan los entrenamientos.","Your workouts arrive here."),ac:"email"},
+  {grid:[{id:"age",type:"number",req:1,l:L("Edad","Age")},
+         {id:"sex",type:"one",l:L("Sexo","Sex"),opts:[["F",L("Mujer","Female")],["M",L("Hombre","Male")],["X",L("Prefiero no decir","Prefer not to say")]]}]},
+]};
+const S_ABOUT_RUN = {...S_ABOUT_BEG, q:[...S_ABOUT_BEG.q,
+  {grid:[{id:"height_cm",type:"number",l:L("Estatura (cm)","Height (cm)")},{id:"weight_kg",type:"number",l:L("Peso (kg)","Weight (kg)")}]},
+  {grid:[{id:"city",type:"text",l:L("Ciudad donde entrenas","City you train in")},{id:"altitude_m",type:"number",l:L("Altitud aprox. (m)","Approx. altitude (m)"),h:L("Ciudad de México ≈ 2240","Mexico City ≈ 2240")}]},
+]};
+const S_HEALTH = (full) => ({key:"health", eyebrow:L("Salud","Health"), h:L("Antes de empezar, tu salud.","First, your health."),
+  p:L("Marca las que apliquen. Si alguna aplica, solo necesitamos el visto bueno de tu médico antes de empezar.","Tick any that apply. If one does, we just need your doctor's OK before you start."), q:[
+  {id:"parq",type:"parq",req:1},
+  {id:"injuries_current",type:"textarea",l:full ? L("Lesiones actuales","Current injuries") : L("¿Algo te duele hoy o te lastimaste este año?","Anything hurting today, or an injury this year?"),
+    h:full ? L("Dónde y desde cuándo.","Where and since when.") : L("Por ejemplo: rodilla derecha, desde agosto.","For example: right knee, since August.")},
+  ...(full ? [{id:"injuries_12m",type:"textarea",l:L("Lesiones en los últimos 12 meses","Injuries in the last 12 months"),h:L("Dónde y cuánto tiempo sin correr.","Where and how long you stopped running.")},
+              {id:"surgeries",type:"text",l:L("Cirugías relevantes","Relevant surgeries")}] : []),
+]});
+const S_NOW = {key:"now", eyebrow:L("Hoy","Today"), h:L("¿Cómo te mueves hoy?","How active are you today?"),
+  p:L("No hay respuesta incorrecta. Esto define por dónde empieza tu plan.","There's no wrong answer. This sets where your plan begins."), q:[
+  {id:"activity",type:"one",stack:1,req:1,opts:[
+    ["none",L("Todavía no corro","I don't run yet"),L("Camino, o hago poco ejercicio.","I walk, or exercise a little.")],
+    ["walkrun",L("Camino y troto a ratos","I walk and jog a bit"),L("Puedo trotar unos minutos y descanso caminando.","I can jog a few minutes, then walk to recover.")],
+    ["run30",L("Puedo correr 30 minutos seguidos","I can run 30 minutes non-stop"),L("Pero todavía no corro seguido.","But I don't run regularly yet.")]]},
+]};
+const S_GOAL_BEG = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("¿Qué te gustaría lograr?","What would you like to achieve?"), q:[
+  {id:"goal_choice",type:"one",stack:1,req:1,opts:[
+    ["first5k",L("Correr mis primeros 5 km","Run my first 5K"),L("Sin parar, a tu ritmo.","Non-stop, at your own pace.")],
+    ["health",L("Sentirme mejor","Feel better"),L("Más energía, mejor condición, un hábito.","More energy, better fitness, a habit.")],
+    ["race",L("Prepararme para una carrera","Train for a race"),L("Ya tengo una en mente.","I have one in mind.")]]},
+  {id:"race_name",type:"text",l:L("¿Cuál carrera?","Which race?"),show:a=>a.goal_choice==="race"},
+  {grid:[{id:"race_date",type:"date",l:L("Fecha","Date")},
+         {id:"race_distance",type:"one",l:L("Distancia","Distance"),opts:[["5K",L("5K","5K")],["10K",L("10K","10K")],["21K",L("21K","Half")]]}],show:a=>a.goal_choice==="race"},
+  {id:"goal_why",type:"textarea",l:L("¿Por qué ahora?","Why now?"),h:L("Una línea basta. Nos ayuda a motivarte.","One line is enough. It helps us keep you going.")},
+]};
+const S_WEEK_BEG = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("¿Cuándo puedes entrenar?","When can you train?"), q:[
+  {id:"run_days",type:"days",req:1,l:L("Días que puedes salir","Days you can go out"),h:L("Tres días es perfecto para empezar.","Three days is perfect to start.")},
+  {id:"session_time",type:"one",req:1,l:L("Tiempo por sesión","Time per session"),opts:[["30",L("20–30 min","20–30 min")],["45",L("30–45 min","30–45 min")],["60",L("45–60 min","45–60 min")],["90",L("Más de 1 h","Over 1 h")]]},
+  {id:"time_of_day",type:"one",l:L("¿A qué hora?","What time of day?"),opts:[["morning",L("Mañana","Morning")],["midday",L("Mediodía","Midday")],["evening",L("Tarde o noche","Evening")],["varies",L("Varía","It varies")]]},
+]};
+const S_WATCH_BEG = {key:"watch", eyebrow:L("Tu reloj","Your watch"), h:L("Tu reloj y tus recordatorios.","Your watch and reminders."), q:[
+  WATCH_BRAND, WATCH_MODEL,
+  {id:"email_frequency",type:"one",stack:1,req:1,l:L("¿Cómo prefieres los recordatorios por correo?","How would you like email reminders?"),opts:[
+    ["daily",L("Cada día","Every day"),L("La sesión del día, por la mañana.","That day's session, in the morning.")],
+    ["weekly",L("Una vez a la semana","Once a week"),L("Un resumen el lunes.","A summary on Monday.")]]},
+]};
+const S_RUNNING = {key:"running", eyebrow:L("Tu historial","Your running"), h:L("Cuéntanos cómo corres.","Tell us how you run."), q:[
+  {grid:[{id:"km_week_3m",type:"number",req:1,l:L("Km por semana","Km per week"),h:L("Promedio de los últimos 3 meses.","Average over the last 3 months.")},
+         {id:"longest_run_recent_km",type:"number",l:L("Tu carrera más larga del mes (km)","Longest run this month (km)")}]},
+  {grid:[{id:"years_running",type:"text",l:L("Años corriendo","Years running")},{id:"km_week_max",type:"number",l:L("Máximo de km en una semana","Most km in one week")}]},
+  {grid:[{id:"best_5k",type:"text",l:L("Mejor 5K reciente","Best recent 5K"),h:L("mm:ss","mm:ss"),ph:"24:30"},{id:"best_10k",type:"text",l:L("Mejor 10K reciente","Best recent 10K"),h:L("mm:ss","mm:ss"),ph:"51:00"}]},
+  {grid:[{id:"best_hm",type:"text",l:L("Mejor medio maratón","Best half marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"1:52:00"},{id:"best_m",type:"text",l:L("Mejor maratón","Best marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"3:59:00"}]},
+  {id:"best_race_date",type:"date",l:L("Fecha de tu carrera más reciente","Date of your most recent race")},
+]};
+const S_OTHER = {key:"other", eyebrow:L("Otros deportes","Other sports"), h:L("Lo que haces además de correr.","What you do besides running."), q:[
+  {id:"gym_days",type:"days",l:L("Gimnasio","Gym")},
+  {id:"swim_days",type:"days",l:L("Natación","Swimming")},
+  {id:"spin_days",type:"days",l:L("Bici o spinning","Bike or spin")},
+  {id:"other_sports",type:"textarea",l:L("Otros deportes","Other sports"),h:L("Cuál y cuántas veces por semana.","Which, and how often.")},
+  {id:"facilities",type:"many",l:L("Tienes acceso a","You have access to"),opts:[["track",L("Pista","Track")],["treadmill",L("Caminadora","Treadmill")],["spin_bike",L("Bici fija","Spin bike")],["pool",L("Alberca","Pool")],["gym",L("Gimnasio","Gym")]]},
+  {id:"coached_before",type:"text",l:L("¿Has tenido entrenador antes? ¿Cómo te fue?","Coached before? How did it go?")},
+]};
+const S_GOAL_RUN = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("¿Hacia dónde vamos?","Where are we headed?"), q:[
+  {id:"goal_type",type:"one",req:1,l:L("Tu objetivo principal","Your main goal"),opts:[["race",L("Una carrera","A race")],["fitness",L("Condición general","General fitness")]]},
+  {grid:[{id:"race_name",type:"text",l:L("Carrera","Race")},{id:"race_date",type:"date",l:L("Fecha","Date")}],show:a=>a.goal_type==="race"},
+  {id:"race_distance",type:"one",l:L("Distancia","Distance"),opts:[["5K",L("5K","5K")],["10K",L("10K","10K")],["21K",L("21K","Half")],["42K",L("42K","Marathon")],["other",L("Otra","Other")]],show:a=>a.goal_type==="race"},
+  {id:"target_time",type:"text",l:L("Tiempo objetivo","Target time"),show:a=>a.goal_type==="race"},
+  {id:"goal_why",type:"textarea",l:L("¿Por qué es importante para ti?","Why does it matter to you?")},
+  {id:"success_3m",type:"textarea",l:L("¿Qué sería un éxito en 3 meses?","What would success look like in 3 months?")},
+]};
+const S_WEEK_RUN = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("Tu disponibilidad.","Your availability."), q:[
+  {id:"run_days",type:"days",req:1,l:L("Días que puedes correr","Days you can run")},
+  {id:"long_run_day",type:"day1",l:L("Día para la carrera larga","Long-run day")},
+  {id:"quality_day",type:"day1",l:L("Día para una sesión intensa","Day for a hard session")},
+  {id:"time_of_day",type:"one",l:L("Horario habitual","Usual time of day"),opts:[["morning",L("Mañana","Morning")],["midday",L("Mediodía","Midday")],["evening",L("Tarde o noche","Evening")],["varies",L("Varía","It varies")]]},
+  {grid:[{id:"max_weekday_min",type:"number",l:L("Máx. minutos entre semana","Max minutes, weekdays")},{id:"max_weekend_min",type:"number",l:L("Máx. minutos fin de semana","Max minutes, weekends")}]},
+  {id:"commitments",type:"textarea",l:L("Compromisos fijos","Fixed commitments"),h:L("Clases, trabajo, familia.","Classes, work, family.")},
+  {id:"travel",type:"textarea",l:L("Viajes ya planeados","Planned travel"),h:L("Con fechas.","With dates.")},
+]};
+const S_RECOVERY = {key:"recovery", eyebrow:L("Recuperación","Recovery"), h:L("Descanso y día a día.","Rest and everyday life."), q:[
+  {id:"sleep_hours",type:"number",l:L("Horas de sueño promedio","Average hours of sleep")},
+  {id:"stress",type:"one",l:L("Estrés en el trabajo","Work stress"),opts:[["low",L("Bajo","Low")],["medium",L("Medio","Medium")],["high",L("Alto","High")]]},
+  {id:"shift_work",type:"one",l:L("¿Trabajas turnos o de noche?","Shift or night work?"),opts:YN},
+  {id:"alcohol",type:"one",l:L("Alcohol","Alcohol"),opts:[["never",L("Nunca","Never")],["occasional",L("Ocasional","Occasional")],["weekly",L("Semanal","Weekly")],["frequent",L("Frecuente","Frequent")]]},
+  {id:"after_hard_weeks",type:"textarea",l:L("¿Cómo te sientes después de semanas pesadas?","How do you feel after hard weeks?")},
+]};
+const S_WATCH_RUN = {key:"watch", eyebrow:L("Reloj y preferencias","Watch and preferences"), h:L("Tu reloj y tus gustos.","Your watch and what you like."), q:[
+  WATCH_BRAND, WATCH_MODEL,
+  {id:"garmin_connect",type:"one",l:L("¿Usas la app Garmin Connect?","Do you use the Garmin Connect app?"),opts:YN,show:a=>a.watch_brand==="garmin"},
+  {grid:[{id:"max_hr",type:"number",l:L("FC máxima, si la sabes","Max heart rate, if known")},{id:"rest_hr",type:"number",l:L("FC en reposo al despertar","Resting HR on waking")}]},
+  {id:"email_frequency",type:"one",stack:1,req:1,l:L("Recordatorios por correo","Email reminders"),opts:[
+    ["daily",L("Cada día","Every day"),L("La sesión del día.","That day's session.")],["weekly",L("Semanal","Weekly"),L("Un resumen el lunes.","A summary on Monday.")]]},
+  {id:"likes",type:"textarea",l:L("¿Qué te gusta entrenar?","What do you enjoy training?")},
+  {id:"dislikes",type:"textarea",l:L("¿Qué no te gusta?","What do you dislike?")},
+]};
+const S_CONNECT = {key:"connect", eyebrow:L("Conexión","Connection"), h:L("Conecta tu reloj.","Connect your watch."),
+  p:L("Tus entrenamientos llegan a Garmin a través de intervals.icu, un servicio gratuito. Puedes hacerlo ahora o con tu coach en la llamada.",
+      "Your workouts reach Garmin through intervals.icu, a free service. Do it now, or with your coach on the call."), q:[
+  {id:"setup",type:"one",stack:1,req:1,opts:[
+    ["call",L("Lo hago con mi coach en la llamada","I'll do it with my coach on the call"),L("Recomendado si es tu primera vez.","Recommended if this is new to you.")],
+    ["now",L("Lo hago ahora","I'll do it now"),L("Toma unos 3 minutos.","Takes about 3 minutes.")]]},
+  {id:"setup_steps",type:"steps",show:a=>a.setup==="now"},
+  {id:"icu_athlete_id",type:"text",l:L("Tu ID de intervals.icu","Your intervals.icu ID"),ph:"i123456",h:L("Empieza con i, seguido de números.","Starts with i, followed by digits."),show:a=>a.setup==="now"},
+]};
+const S_CONSENT = {key:"consent", eyebrow:L("Último paso","Final step"), h:L("Un acuerdo sencillo.","A simple agreement."), q:[
+  {id:"consent",type:"consent",req:1,l:L("Entreno bajo mi propio riesgo y avisaré a mi coach si tengo dolor, una lesión o una enfermedad. Mis datos se usan solo para entrenarme y se borran si lo pido.",
+    "I train at my own risk and will tell my coach about any pain, injury or illness. My data is used only for my training and is deleted on request.")},
+]};
+const FLOWS = {
+  beginner: [S_ABOUT_BEG, S_HEALTH(false), S_NOW, S_GOAL_BEG, S_WEEK_BEG, S_WATCH_BEG, S_CONNECT, S_CONSENT],
+  runner:   [S_ABOUT_RUN, S_HEALTH(true), S_RUNNING, S_OTHER, S_GOAL_RUN, S_WEEK_RUN, S_RECOVERY, S_WATCH_RUN, S_CONNECT, S_CONSENT],
+};
+const STEPS_TXT = [
+  [L("Crea tu cuenta","Create your account"), L('Entra a <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> y regístrate con Google. Es gratis.','Go to <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> and sign up with Google. It\'s free.')],
+  [L("Conecta Garmin","Connect Garmin"), L('Abre <b>Settings</b>, busca <b>Garmin</b> y toca <b>Connect</b>. Marca la casilla <b>"Upload planned workouts"</b>.','Open <b>Settings</b>, find <b>Garmin</b> and tap <b>Connect</b>. Tick <b>"Upload planned workouts"</b>.')],
+  [L("Copia tu ID","Copy your ID"), L('Abre tu perfil. En la dirección de la página verás un código como <code>i123456</code>. Pégalo abajo.','Open your profile. The page address shows a code like <code>i123456</code>. Paste it below.')],
+];
+
+/* ---- State ---- */
+const KEY = "team-coach-intake-v2";
+let st = {lang: "es", path: null, step: 0, a: {}, done: false};
+try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && typeof s === "object") st = {...st, ...s}; } catch (e) {}
+const t = o => o[st.lang];
+const form = document.getElementById("f");
+let saveTimer;
+function save(show) {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(KEY, JSON.stringify(st)); if (show) { const s = document.getElementById("saved"); s.textContent = t(T.saved); setTimeout(() => s.textContent = "", 1600); } } catch (e) {}
+  }, 300);
+}
+
+function el(tag, attrs = {}, kids = []) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "text") e.textContent = v; else if (k === "html") e.innerHTML = v; else e.setAttribute(k, v);
+  }
+  kids.forEach(k => k && e.append(k));
+  return e;
+}
+const visible = q => !q.show || q.show(st.a);
+const flatQ = sc => sc.q.flatMap(q => q.grid ? (visible(q) ? q.grid : []) : (visible(q) ? [q] : []));
+
+/* ---- Field renderers ---- */
+function label(q, tag, forId) {
+  const n = el(tag, forId ? {for: forId} : {}, [document.createTextNode(t(q.l))]);
+  if (!q.req && q.type !== "consent") n.append(el("span", {class: "opt", text: t(T.optional)}));
+  return n;
+}
+function chipGroup(q, type, opts) {
+  const box = el("div", {class: "chips" + (q.stack ? " stack" : "") + (q.type.startsWith("day") ? " days" : "")});
+  const cur = st.a[q.id] || "";
+  const sel = type === "checkbox" ? cur.split(", ").filter(Boolean) : [cur];
+  opts.forEach(([v, lab, sub]) => {
+    const i = el("input", {type, name: q.id, value: v, id: `q-${q.id}-${v}`});
+    if (sel.includes(v)) i.checked = true;
+    box.append(el("label", {class: "chip"}, [i, el("span", {}, [document.createTextNode(lab), sub ? el("small", {text: sub}) : null])]));
+  });
+  return box;
+}
+function field(q) {
+  const id = "q-" + q.id;
+  if (["text","email","number","date","textarea"].includes(q.type)) {
+    const box = el("div", {class: "q", "data-q": q.id});
+    box.append(label(q, "label", id));
+    if (q.h) box.append(el("div", {class: "hint", text: t(q.h)}));
+    const inp = q.type === "textarea" ? el("textarea", {id, name: q.id}) :
+      el("input", {id, name: q.id, type: q.type, inputmode: q.type === "number" ? "decimal" : null, autocomplete: q.ac || "off", placeholder: q.ph || null});
+    inp.value = st.a[q.id] || "";
+    box.append(inp);
+    return box;
+  }
+  if (q.type === "steps") {
+    return el("ol", {class: "steps"}, STEPS_TXT.map(([h, p]) => el("li", {}, [el("div", {}, [el("b", {text: t(h)}), el("p", {html: t(p)})])])));
+  }
+  if (q.type === "consent") {
+    const i = el("input", {type: "checkbox", id, name: "consent", value: "yes"}); i.checked = st.a.consent === "yes";
+    return el("div", {class: "q", "data-q": "consent"}, [el("label", {class: "consent"}, [i, el("span", {text: t(q.l)})])]);
+  }
+  if (q.type === "parq") {
+    const fs = el("div", {class: "q", "data-q": "parq"});
+    const list = el("div", {class: "checks"});
+    PARQ.forEach(([k, lab]) => {
+      const i = el("input", {type: "checkbox", id: "q-" + k, name: "parq_item", value: k}); i.checked = st.a[k] === "yes";
+      list.append(el("label", {class: "check"}, [i, el("span", {text: t(lab)})]));
+    });
+    const none = el("input", {type: "checkbox", id: "q-parq-none", name: "parq_none", value: "yes"}); none.checked = st.a.parq_none === "yes";
+    list.append(el("label", {class: "check none"}, [none, el("span", {text: st.lang === "es" ? "Ninguna aplica" : "None of these apply"})]));
+    fs.append(list);
+    return fs;
+  }
+  const fs = el("fieldset", {class: "q", "data-q": q.id});
+  if (q.l) fs.append(label(q, "legend"));
+  if (q.h) fs.append(el("div", {class: "hint", text: t(q.h)}));
+  if (q.type === "one") fs.append(chipGroup(q, "radio", q.opts.map(([v, l, s]) => [v, t(l), s && t(s)])));
+  else if (q.type === "many") fs.append(chipGroup(q, "checkbox", q.opts.map(([v, l]) => [v, t(l)])));
+  else if (q.type === "days") fs.append(chipGroup(q, "checkbox", DAYS.map((d, i) => [d, DAY_SHORT[st.lang][i]])));
+  else if (q.type === "day1") fs.append(chipGroup(q, "radio", DAYS.map((d, i) => [d, DAY_SHORT[st.lang][i]])));
+  return fs;
+}
+
+/* ---- Screens ---- */
+function renderWelcome() {
+  const sc = el("div", {class: "screen"});
+  sc.append(el("header", {}, [el("p", {class: "eyebrow", text: t(T.welcomeEyebrow)}), el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
+  const paths = el("div", {class: "paths", role: "group", "aria-label": t(T.pathQ)});
+  [["beginner", T.begT, T.begS, T.begI], ["runner", T.runT, T.runS, T.runI]].forEach(([p, h, s, i]) => {
+    const b = el("button", {type: "button", class: "path", id: "path-" + p}, [el("strong", {text: t(h)}), el("small", {text: t(s)}), el("i", {text: t(i)})]);
+    b.addEventListener("click", () => { st.path = p; st.step = 0; save(); render(); scrollTo(0, 0); });
+    paths.append(b);
+  });
+  sc.append(el("h2", {text: t(T.pathQ), style: "font-size:1.9rem"}), paths);
+  sc.append(el("ul", {class: "reassure"}, [[T.r1h, T.r1p], [T.r2h, T.r2p], [T.r3h, T.r3p]].map(([h, p]) => el("li", {}, [el("b", {text: t(h)}), document.createTextNode(t(p))]))));
+  return sc;
+}
+function renderStep() {
+  const sc = FLOWS[st.path][st.step];
+  const box = el("div", {class: "screen"});
+  box.append(el("header", {}, [el("p", {class: "eyebrow", text: t(sc.eyebrow)}), el("h2", {text: t(sc.h)}), sc.p ? el("p", {class: "note", text: t(sc.p)}) : null]));
+  sc.q.forEach(q => {
+    if (!visible(q)) return;
+    if (q.grid) box.append(el("div", {class: "grid2"}, q.grid.map(field)));
+    else box.append(field(q));
+  });
+  box.append(el("p", {class: "msg", id: "msg", role: "alert"}));
+  return box;
+}
+function renderDone() {
+  const box = el("div", {class: "screen"});
+  const head = (eb, h, p) => box.append(el("header", {}, [el("p", {class: "eyebrow", text: t(eb)}), el("h1", {html: t(h)}), p ? el("p", {class: "lede", text: t(p)}) : null]));
+  const nextSteps = () => box.append(el("div", {style: "display:grid;gap:18px;border-top:3px solid var(--ink);padding-top:24px"}, [
+    el("p", {class: "eyebrow", text: t(T.nextH)}),
+    el("ol", {class: "next"}, [T.n1, T.n2, T.n3].map((n, i) => el("li", {}, [el("span", {text: String(i + 1)}), el("div", {text: t(n)})])))]));
+  if (st.sendState === "sending") { head(T.doneEyebrow, T.sendingH, null); return box; }
+  if (st.sendState === "sent") { head(T.doneEyebrow, T.sentH, T.sentP); nextSteps(); box.append(restartBtn()); return box; }
+
+  // Fallback: automatic send unavailable or failed -> WhatsApp / copy
+  const text = message();
+  head(T.doneEyebrow, T.doneH, FORM_KEY ? T.failP : T.doneP);
+  const actions = [];
+  if (FORM_KEY) { const r = el("button", {type: "button", class: "btn primary", id: "retry", text: t(T.retry)}); r.addEventListener("click", submitAll); actions.push(r); }
+  actions.push(el("a", {class: FORM_KEY ? "btn line" : "btn primary", href: "https://wa.me/?text=" + encodeURIComponent(text), target: "_blank", rel: "noopener", style: "text-decoration:none", text: t(T.wa) + " →"}));
+  const copy = el("button", {type: "button", class: "btn line", id: "copy", text: t(T.copy)});
+  const note = el("span", {class: "saved", id: "copied", "aria-live": "polite"});
+  const pre = el("pre", {class: "block", id: "out", tabindex: "0", text});
+  const det = el("details", {}, [el("summary", {text: t(T.showMsg)}), pre]);
+  copy.addEventListener("click", () => {
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); det.open = true; note.textContent = t(T.copyFail); };
+    try { navigator.clipboard.writeText(text).then(() => note.textContent = t(T.copied), fallback); } catch (e) { fallback(); }
+  });
+  actions.push(copy, note);
+  box.append(el("div", {class: "done-actions"}, actions), det);
+  nextSteps(); box.append(restartBtn());
+  return box;
+}
+function restartBtn() {
+  const rs = el("button", {type: "button", class: "restart", id: "restart", text: t(T.restart)});
+  let armed = false;
+  rs.addEventListener("click", () => {
+    if (!armed) { armed = true; rs.textContent = t(T.restartSure); setTimeout(() => { armed = false; rs.textContent = t(T.restart); }, 4000); return; }
+    st = {lang: st.lang, path: null, step: 0, a: {}, done: false}; try { localStorage.removeItem(KEY); } catch (e) {} render(); scrollTo(0, 0);
+  });
+  return rs;
+}
+
+function render() {
+  document.documentElement.lang = st.lang;
+  document.getElementById("brand").textContent = BRAND;
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === st.lang));
+  const flow = st.path && FLOWS[st.path];
+  if (flow && st.step >= flow.length) st.step = flow.length - 1;
+  const inStep = flow && !st.done;
+  document.getElementById("prog").hidden = !inStep;
+  document.getElementById("nav").hidden = !inStep;
+  if (inStep) {
+    document.getElementById("prog-label").textContent = `${t(T.step)} ${String(st.step + 1).padStart(2, "0")}/${String(flow.length).padStart(2, "0")}`;
+    document.getElementById("prog-bar").style.width = (100 * (st.step + 1) / flow.length) + "%";
+    document.getElementById("back").textContent = t(T.back);
+    document.getElementById("next").textContent = st.step === flow.length - 1 ? t(T.finish) : t(T.next);
+  }
+  form.replaceChildren(st.done && flow ? renderDone() : inStep ? renderStep() : renderWelcome());
+}
+
+/* ---- Input handling ---- */
+form.addEventListener("input", e => {
+  const n = e.target; if (!n.name) return;
+  const a = st.a;
+  if (n.name === "parq_item") {
+    a[n.value] = n.checked ? "yes" : "";
+    if (n.checked) { a.parq_none = ""; const x = document.getElementById("q-parq-none"); if (x) x.checked = false; }
+  } else if (n.name === "parq_none") {
+    a.parq_none = n.checked ? "yes" : "";
+    if (n.checked) PARQ.forEach(([k]) => { a[k] = ""; const x = document.getElementById("q-" + k); if (x) x.checked = false; });
+  } else if (n.type === "checkbox" && n.name !== "consent") {
+    a[n.name] = [...form.querySelectorAll(`input[name="${n.name}"]:checked`)].map(i => i.value).join(", ");
+  } else if (n.name === "consent") a.consent = n.checked ? "yes" : "";
+  else a[n.name] = n.type === "radio" ? n.value : n.value.trim();
+  const box = n.closest("[data-q]"); if (box) box.classList.remove("bad");
+  const msg = document.getElementById("msg"); if (msg) msg.textContent = "";
+  if (n.type === "radio") {               // conditional questions may appear or disappear
+    const sc = FLOWS[st.path][st.step];
+    if (sc.q.some(q => q.show)) { const y = scrollY; render(); scrollTo(0, y); }
+  }
+  save(true);
+});
+
+function validate() {
+  const sc = FLOWS[st.path][st.step]; const a = st.a;
+  let first = null, msg = t(T.required);
+  for (const q of flatQ(sc)) {
+    let ok = true;
+    if (q.type === "parq") ok = a.parq_none === "yes" || PARQ.some(([k]) => a[k] === "yes");
+    else if (q.req) ok = !!a[q.id];
+    if (ok && q.type === "email" && a[q.id]) { ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(a[q.id]); if (!ok) msg = t(T.emailBad); }
+    if (!ok) { const b = form.querySelector(`[data-q="${q.id}"]`); if (b) b.classList.add("bad"); first = first || b; }
+  }
+  if (first) { document.getElementById("msg").textContent = msg; first.scrollIntoView({block: "center", behavior: "smooth"}); const f = first.querySelector("input,textarea"); if (f) f.focus({preventScroll: true}); }
+  return !first;
+}
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  if (!st.path || st.done || !validate()) return;
+  if (st.step < FLOWS[st.path].length - 1) { st.step++; save(); render(); scrollTo(0, 0); return; }
+  st.done = true; submitAll(); scrollTo(0, 0);
+});
+
+/* ---- Automatic email (Web3Forms) ---- */
+function submitAll() {
+  if (!FORM_KEY) { st.sendState = "manual"; save(); render(); return; }
+  st.sendState = "sending"; render();
+  send().then(() => { st.sendState = "sent"; save(); render(); }, () => { st.sendState = "failed"; save(); render(); });
+}
+const ES_PATH = {beginner: "Principiante", runner: "Corredor"};
+function fmt(q, v) {
+  if (q.type === "days" || q.type === "day1") return v.split(", ").map(d => DAY_SHORT.es[DAYS.indexOf(d)]).join(", ");
+  if (q.opts) return v.split(", ").map(x => { const o = q.opts.find(o => o[0] === x); return o ? o[1].es : x; }).join(", ");
+  return v;
+}
+function summary() {
+  const rows = {"Ruta": ES_PATH[st.path]};
+  const flagged = PARQ.filter(([k]) => st.a[k] === "yes").map(([, l]) => l.es);
+  rows["Salud"] = flagged.length ? "REVISAR: " + flagged.join("; ") : "Ninguna aplica";
+  FLOWS[st.path].forEach(sc => flatQ(sc).forEach(q => {
+    if (!q.l || q.type === "parq" || q.type === "steps" || q.type === "consent") return;
+    const v = st.a[q.id]; if (!v) return;
+    rows[q.l.es] = fmt(q, v);
+  }));
+  rows["Consentimiento"] = st.a.consent === "yes" ? "Aceptado" : "NO";
+  return rows;
+}
+async function send() {
+  const s = summary(), name = st.a.name || "Atleta";
+  const subject = `Nuevo atleta: ${name} · ${ES_PATH[st.path]}` + (s["Salud"].startsWith("REVISAR") ? " · REVISAR SALUD" : "");
+  const body = {access_key: FORM_KEY, subject, from_name: BRAND, replyto: st.a.email || "", botcheck: "",
+    ...s, "Bloque para el coach (pegar en Claude)": message()};
+  const r = await fetch("https://api.web3forms.com/submit", {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify(body)});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.success) throw new Error(j.message || "send failed");
+}
+document.getElementById("back").addEventListener("click", () => {
+  if (st.step > 0) st.step--; else st.path = null;
+  save(); render(); scrollTo(0, 0);
+});
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => { st.lang = b.dataset.lang; save(); render(); }));
+
+/* ---- Hand-off: translate to the ids coach/onboard.py reads ---- */
+function payload() {
+  const a = {...st.a}; const today = new Date().toISOString().slice(0, 10);
+  const out = {_form: "team-coach-intake", v: 2, path: st.path, submitted: today, consent_date: today, language: st.lang};
+  PARQ.forEach(([k]) => out[k] = a[k] === "yes" ? "yes" : "no");
+  delete a.parq_none; PARQ.forEach(([k]) => delete a[k]);
+  if (st.path === "beginner") {
+    const act = {none: ["no", "0"], walkrun: ["no", "5"], run30: ["yes", "8"]}[a.activity] || ["no", "0"];
+    out.runs_continuous_30min = act[0]; out.km_week_3m = act[1];
+    if (a.goal_choice === "race") out.goal_type = "race";
+    else {
+      out.goal_type = "fitness"; delete a.race_name; delete a.race_date; delete a.race_distance;
+      if (a.goal_choice === "first5k") { out.race_distance = "5K"; out.success_3m = st.lang === "es" ? "Correr mis primeros 5 km sin parar" : "Run my first 5K non-stop"; }
+    }
+    if (a.session_time) out.max_weekday_min = out.max_weekend_min = a.session_time;
+  } else {
+    out.runs_continuous_30min = "yes";
+    if (a.goal_type !== "race") { delete a.race_name; delete a.race_date; delete a.race_distance; delete a.target_time; }
+  }
+  if (a.setup !== "now") delete a.icu_athlete_id;
+  if (a.watch_brand) {
+    const names = {garmin:"Garmin",apple:"Apple Watch",coros:"COROS",suunto:"Suunto",polar:"Polar",other:"",none:"none"};
+    out.watch_model = a.watch_brand === "none" ? "none" : [names[a.watch_brand], a.watch_model || ""].join(" ").trim() || "other";
+    delete a.watch_model; if (a.watch_brand !== "garmin") delete a.garmin_connect;
+  }
+  for (const [k, v] of Object.entries(a)) if (v !== "" && v != null && !(k in out)) out[k] = v;
+  return out;
+}
+function message() {
+  return t(T.msgIntro) + "\n\nTEAM-COACH-INTAKE-START\n" + JSON.stringify(payload()) + "\nTEAM-COACH-INTAKE-END";
+}
+
+if (st.done && st.sendState === "sending") st.sendState = "failed";   // interrupted send: offer retry, never resend silently
+render();
+</script>
+
+</body>
+</html>
