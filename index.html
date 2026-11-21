@@ -150,6 +150,19 @@ details[open] summary { margin-bottom: 10px }
 .next li span { font: 900 1.8rem/1 var(--display); font-stretch: 72%; color: var(--hot) }
 .restart { background: none; border: 0; color: var(--muted); font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 0; justify-self: start }
 
+/* review mode: feedback bubble (only with ?review=1) */
+.fb-btn { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 6;
+  background: var(--olive); color: var(--bg); border: 2px solid var(--ink); border-radius: 999px; padding: 11px 16px; font: 700 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; box-shadow: 3px 3px 0 var(--ink) }
+.fb-btn.up { bottom: calc(88px + env(safe-area-inset-bottom, 0px)) }
+.fb-btn.has::after { content: " ●"; color: var(--hot) }
+.fb-panel { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 7;
+  width: min(380px, calc(100vw - 32px)); background: var(--surface); border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); padding: 14px; display: grid; gap: 10px }
+.fb-panel.up { bottom: calc(144px + env(safe-area-inset-bottom, 0px)) }
+.fb-panel p { margin: 0; font: 700 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--olive) }
+.fb-panel textarea { min-height: 110px }
+.fb-panel div { display: flex; gap: 10px; justify-content: flex-end }
+.fb-panel .btn { padding: 10px 16px; font-size: 14px }
+.review-tag { font: 700 10px var(--mono); letter-spacing: .1em; background: var(--hot); color: var(--hot-ink); padding: 3px 6px; margin-left: 8px }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 </style>
 </head>
@@ -176,6 +189,13 @@ details[open] summary { margin-bottom: 10px }
     <span class="saved" id="saved" aria-live="polite"></span>
     <button type="submit" form="f" class="btn primary" id="next"></button>
   </div>
+</div>
+
+<button type="button" class="fb-btn" id="fb-btn" hidden>Feedback</button>
+<div class="fb-panel" id="fb-panel" hidden role="dialog" aria-label="Feedback">
+  <p id="fb-title"></p>
+  <textarea id="fb-text" placeholder="¿Qué cambiarías en esta pantalla? Textos, opciones, diseño, lo que sea."></textarea>
+  <div><button type="button" class="btn quiet" id="fb-close">Cerrar</button><button type="button" class="btn primary" id="fb-save">Guardar</button></div>
 </div>
 
 <script>
@@ -241,6 +261,9 @@ const T = {
   retry: L("Reintentar envío","Try again"),
   restart: L("Empezar de nuevo","Start over"), restartSure: L("Toca otra vez para borrar todo","Tap again to erase everything"),
 };
+
+/* Review mode (?review=1): a feedback bubble on every screen; notes travel with the email. */
+const REVIEW = /[?&](review|feedback)=1\b/.test(location.search);
 
 /* ---- Screens ----
    Field ids match coach/onboard.py. Beginner-only fields (activity, goal_choice, session_time, setup) are
@@ -528,7 +551,16 @@ function renderDone() {
     el("p", {class: "eyebrow", text: t(T.nextH)}),
     el("ol", {class: "next"}, [T.n1, T.n2, T.n3].map((n, i) => el("li", {}, [el("span", {text: String(i + 1)}), el("div", {text: t(n)})])))]));
   if (st.sendState === "sending") { head(T.doneEyebrow, T.sendingH, null); return box; }
-  if (st.sendState === "sent") { head(T.doneEyebrow, T.sentH, T.sentP); nextSteps(); box.append(restartBtn()); return box; }
+  if (st.sendState === "sent") {
+    head(T.doneEyebrow, T.sentH, T.sentP);
+    if (REVIEW && FORM_KEY) {
+      const b = el("button", {type: "button", class: "btn line", id: "send-fb", text: "Enviar feedback final"});
+      const n = el("span", {class: "saved", "aria-live": "polite"});
+      b.addEventListener("click", () => { n.textContent = "Enviando…"; sendFeedback().then(() => { n.textContent = "Feedback enviado"; }, () => { n.textContent = "No se pudo enviar, intenta otra vez"; }); });
+      box.append(el("div", {class: "done-actions"}, [b, n]));
+    }
+    nextSteps(); box.append(restartBtn()); return box;
+  }
 
   // Fallback: automatic send unavailable or failed -> WhatsApp / copy
   const text = message();
@@ -575,6 +607,12 @@ function render() {
     document.getElementById("next").textContent = st.step === flow.length - 1 ? t(T.finish) : t(T.next);
   }
   form.replaceChildren(st.done && flow ? renderDone() : inStep ? renderStep() : renderWelcome());
+  if (REVIEW) {
+    if (!document.querySelector(".review-tag")) document.getElementById("brand").after(el("span", {class: "review-tag", text: "MODO REVISIÓN"}));
+    const b = document.getElementById("fb-btn"); b.hidden = false;
+    b.classList.toggle("up", inStep); b.classList.toggle("has", !!(st.fb || {})[fbKey()]);
+    const pnl = document.getElementById("fb-panel"); pnl.hidden = true; pnl.classList.toggle("up", inStep);
+  }
 }
 
 /* ---- Input handling ---- */
@@ -672,9 +710,10 @@ function summary() {   // flat rows for the email
 }
 async function send() {
   const s = summary(), name = st.a.name || "Atleta";
-  const subject = `Nuevo atleta: ${name} · ${ES_PATH[st.path]}` + (s["Salud"].startsWith("REVISAR") ? " · REVISAR SALUD" : "");
+  const subject = (REVIEW ? "[REVISIÓN] " : "") + `Nuevo atleta: ${name} · ${ES_PATH[st.path]}` + (s["Salud"].startsWith("REVISAR") ? " · REVISAR SALUD" : "");
   const body = {access_key: FORM_KEY, subject, from_name: BRAND, replyto: st.a.email || "", botcheck: "",
-    ...s, "Código de registro": block()};
+    ...s, ...(REVIEW && fbText() ? {"Feedback de prueba": (Object.assign(FB_LABELS, st.fbLabels || {}), fbText())} : {}),
+    "Código de registro": block()};
   const r = await fetch("https://api.web3forms.com/submit", {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify(body)});
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.success) throw new Error(j.message || "send failed");
@@ -684,6 +723,39 @@ document.getElementById("back").addEventListener("click", () => {
   save(); render(); scrollTo(0, 0);
 });
 document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => { st.lang = b.dataset.lang; save(); render(); }));
+
+/* ---- Review feedback ---- */
+function fbKey() { if (!st.path) return "welcome"; if (st.done) return st.path + ":final"; return st.path + ":" + FLOWS[st.path][st.step].key; }
+function fbLabel() {
+  if (!st.path) return "Bienvenida";
+  if (st.done) return ES_PATH[st.path] + " · Pantalla final";
+  const f = FLOWS[st.path]; return `${ES_PATH[st.path]} · Paso ${st.step + 1}/${f.length} · ${f[st.step].eyebrow.es}`;
+}
+const FB_LABELS = {};
+function fbText() {
+  return Object.entries(st.fb || {}).filter(([, v]) => v).map(([k, v]) => `[${FB_LABELS[k] || k}]\n${v}`).join("\n\n");
+}
+if (REVIEW) {
+  const btn = document.getElementById("fb-btn"), pnl = document.getElementById("fb-panel"), txt = document.getElementById("fb-text");
+  btn.addEventListener("click", () => {
+    if (!pnl.hidden) { pnl.hidden = true; return; }
+    document.getElementById("fb-title").textContent = "Feedback · " + fbLabel();
+    txt.value = (st.fb || {})[fbKey()] || ""; pnl.hidden = false; txt.focus();
+  });
+  document.getElementById("fb-close").addEventListener("click", () => { pnl.hidden = true; });
+  document.getElementById("fb-save").addEventListener("click", () => {
+    st.fb = {...(st.fb || {}), [fbKey()]: txt.value.trim()}; FB_LABELS[fbKey()] = fbLabel();
+    st.fbLabels = {...(st.fbLabels || {}), [fbKey()]: fbLabel()};
+    save(); pnl.hidden = true; btn.classList.toggle("has", !!txt.value.trim());
+  });
+}
+async function sendFeedback() {
+  Object.assign(FB_LABELS, st.fbLabels || {});
+  const body = {access_key: FORM_KEY, subject: `Feedback onboarding · ${ES_PATH[st.path] || ""} · ${st.a.name || "sin nombre"}`,
+    from_name: BRAND, botcheck: "", "Ruta": ES_PATH[st.path] || "", "Feedback": fbText() || "(sin notas)"};
+  const r = await fetch("https://api.web3forms.com/submit", {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify(body)});
+  const j = await r.json().catch(() => ({})); if (!r.ok || !j.success) throw new Error(j.message || "send failed");
+}
 
 /* ---- Hand-off: translate to the ids coach/onboard.py reads ---- */
 function payload() {
