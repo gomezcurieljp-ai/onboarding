@@ -123,7 +123,8 @@ textarea { min-height: 84px; resize: vertical }
 .steps li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; gap: 12px }
 .steps li::before { content: counter(s); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font: 600 14px var(--display) }
 .steps li > div { min-width: 0 }
-.steps b { display: block; font: 600 16px var(--display); color: var(--ink) }
+.steps li > div > b { display: block; font: 600 16px var(--display); color: var(--ink) }
+.steps p b { font-weight: 600; color: var(--ink) }   /* button names stay inline in the sentence */
 .steps p { margin: 2px 0 0; color: var(--muted); font-size: 15px }
 .steps a, .link { color: var(--ink); font-weight: 600; text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; text-underline-offset: 3px }
 code { font: 500 14px ui-monospace, Menlo, monospace; background: var(--line); border-radius: 4px; padding: 1px 6px }
@@ -243,7 +244,7 @@ const T = {
   back: L("Atrás","Back"), next: L("Continuar","Continue"), finish: L("Terminar","Finish"),
   saved: L("Guardado","Saved"),
   required: L("Responde esta pregunta para continuar","Answer this to continue"),
-  birthBad: L("Revisa tu fecha de nacimiento","Check your date of birth"), dateBad: L("Revisa la fecha","Check the date"), raceDateBad: L("Esa fecha ya pasó: elige la fecha de tu próxima carrera","That date has passed: pick the date of your next race"),
+  birthBad: L("Revisa tu fecha de nacimiento","Check your date of birth"), dateBad: L("Revisa la fecha","Check the date"), tripBad: L("Revisa las fechas del viaje: tienen que ser de hoy en adelante y el regreso después de la salida","Check the trip dates: they must be from today on, and the return after the departure"), raceDateBad: L("Esa fecha ya pasó: elige la fecha de tu próxima carrera","That date has passed: pick the date of your next race"),
   emailBad: L("Revisa tu correo, parece incompleto","Check your email, it looks incomplete"),
   optional: L("opcional","optional"),
   autoTip: L("Lo podemos sacar de Garmin Connect, intervals.icu o TrainingPeaks","We can pull this from Garmin Connect, intervals.icu or TrainingPeaks"),
@@ -384,7 +385,7 @@ const S_WEEK_RUN = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("Tu disp
   {id:"max_weekday_min",type:"one",l:L("Tiempo por sesión entre semana","Time per session on weekdays"),h:L("Lo que tienes para UNA sesión, no el total de la semana","What you have for ONE session, not the week's total"),
     opts:[["30",L("Hasta 30 min","Up to 30 min")],["45",L("30–45 min","30–45 min")],["60",L("45–60 min","45–60 min")],["90",L("Más de 1 h","Over 1 h")]]},
   {id:"max_weekend_min",type:"one",l:L("Tiempo para la carrera larga","Time for the long run"),h:L("Lo máximo que puedes dedicar a esa sesión","The most you can give that one session"),
-    opts:[["60",L("Hasta 1 h","Up to 1 h")],["90",L("1–1.5 h","1–1.5 h")],["120",L("1.5–2 h","1.5–2 h")],["180",L("Más de 2 h","Over 2 h")]]},
+    opts:[["60",L("Hasta 1 h","Up to 1 h")],["90",L("1–1.5 h","1–1.5 h")],["120",L("1.5–2 h","1.5–2 h")],["180",L("Más de 2 h","Over 2 h")],["unknown",L("No sé","Not sure")]]},
   {id:"commitments",type:"many",l:L("Tu día a día","Your day-to-day"),h:L("Elige las que apliquen","Pick any that apply"),opts:[
     ["office",L("Trabajo con horario fijo","Fixed work hours")],["flex",L("Horario flexible / home office","Flexible hours / remote")],
     ["shifts",L("Mi horario cambia cada semana","My schedule changes week to week")],["night",L("Trabajo de noche","I work nights")],
@@ -418,6 +419,9 @@ const S_CONNECT = {key:"connect", eyebrow:L("Conexión","Connection"), h:L("Tus 
   {id:"setup",type:"one",stack:1,req:1,show:a=>a.watch_brand==="garmin",opts:[
     ["call",L("Lo hago con mi coach en la llamada","I'll do it with my coach on the call"),L("Recomendado si es tu primera vez","Recommended if this is new to you")],
     ["now",L("Lo hago ahora","I'll do it now"),L("Toma unos 3 minutos","Takes about 3 minutes")]]},
+  {id:"setup_need",type:"info",show:a=>a.watch_brand==="garmin" && a.setup==="now",
+    text:L("Necesitas tu correo y contraseña de Garmin Connect. Son 4 pasos, unos 3 minutos. Si te atoras, lo terminamos en la llamada",
+           "You need your Garmin Connect email and password. 4 steps, about 3 minutes. If you get stuck, we finish it on the call")},
   {id:"setup_steps",type:"steps",show:a=>a.watch_brand==="garmin" && a.setup==="now"},
   {id:"icu_athlete_id",type:"text",l:L("Tu ID de intervals.icu","Your intervals.icu ID"),ph:"i123456",h:L("Empieza con i, seguido de números","Starts with i, followed by digits"),show:a=>a.watch_brand==="garmin" && a.setup==="now"},
 ]};
@@ -442,10 +446,10 @@ const FLOWS = {
 };
 if (PILOT) { FLOWS.beginner.push(S_PILOT); FLOWS.runner.push(S_PILOT); }
 const STEPS_TXT = [
-  [L("Crea tu cuenta","Create your account"), L('Entra a <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> y regístrate. Puedes entrar con tu cuenta de Google. Es gratis','Go to <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> and sign up. You can use your Google account. It\'s free')],
-  [L("Conecta tu Garmin","Connect your Garmin"), L('En intervals.icu abre <b>Settings</b> y, en la sección <b>Garmin</b>, toca <b>Connect</b>. Se abre la página oficial de Garmin: entra con tu cuenta de Garmin Connect y acepta','In intervals.icu open <b>Settings</b> and, under <b>Garmin</b>, tap <b>Connect</b>. Garmin\'s official page opens: sign in with your Garmin Connect account and accept')],
-  [L("Activa el envío al reloj","Turn on sending to your watch"), L('De regreso en intervals.icu, en esa misma sección marca <b>"Upload planned workouts"</b>. Así tus entrenamientos llegan solos a tu reloj','Back in intervals.icu, in that same section tick <b>"Upload planned workouts"</b>. That way workouts reach your watch on their own')],
-  [L("Copia tu ID","Copy your ID"), L('Abre tu perfil. En la dirección de la página verás un código como <code>i123456</code>. Pégalo abajo','Open your profile. The page address shows a code like <code>i123456</code>. Paste it below')],
+  [L("Crea tu cuenta gratis","Create a free account"), L('Abre <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> y toca <b>Sign up</b>. Lo más rápido es entrar con Google','Open <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> and tap <b>Sign up</b>. Signing in with Google is quickest')],
+  [L("Conecta tu Garmin","Connect your Garmin"), L('Toca tu foto (arriba a la derecha) y luego <b>Settings</b>. En la sección <b>Garmin</b> toca <b>Connect</b>: se abre la página oficial de Garmin. Entra con tu cuenta de Garmin Connect y toca <b>Aceptar</b>','Tap your photo (top right), then <b>Settings</b>. In the <b>Garmin</b> section tap <b>Connect</b>: Garmin\'s official page opens. Sign in with your Garmin Connect account and tap <b>Agree</b>')],
+  [L("Activa el envío al reloj","Turn on sending to your watch"), L('Al volver a intervals.icu, en esa misma sección <b>Garmin</b>, marca <b>Upload planned workouts</b>. Con eso tus entrenamientos llegan solos a tu reloj','Back in intervals.icu, in that same <b>Garmin</b> section, tick <b>Upload planned workouts</b>. That way your workouts reach your watch on their own')],
+  [L("Copia tu ID y pégalo abajo","Copy your ID and paste it below"), L('En <b>Settings</b>, baja hasta <b>Developer Settings</b>: ahí aparece tu <b>Athlete ID</b>, un código como <code>i123456</code>','In <b>Settings</b>, scroll to <b>Developer Settings</b>: your <b>Athlete ID</b> is there, a code like <code>i123456</code>')],
 ];
 
 /* ---- State ---- */
@@ -715,6 +719,11 @@ function validate() {
     if (ok && q.type === "date" && a[q.id] && ((q.min && a[q.id] < q.min) || (q.max && a[q.id] > q.max))) { ok = false; msg = t(q.id === "birth_date" ? T.birthBad : q.id === "race_date" ? T.raceDateBad : T.dateBad); }
     if (!ok) { const b = form.querySelector(`[data-q="${q.id}"]`); if (b) b.classList.add("bad"); first = first || b; }
   }
+  if (!first && flatQ(sc).some(q => q.type === "trips") && a.no_trips !== "yes") {
+    const today = new Date().toISOString().slice(0, 10);
+    const bad = (a.trips || []).some(x => (x.from && x.from < today) || (x.to && x.to < today) || (x.from && x.to && x.to < x.from));
+    if (bad) { first = form.querySelector('[data-q="travel"]') || form.querySelector(".trips"); if (first) first.classList.add("bad"); msg = t(T.tripBad); }
+  }
   if (!first && a.long_run_day && a.long_run_day === a.quality_day && flatQ(sc).some(q => q.id === "quality_day")) {
     first = form.querySelector('[data-q="quality_day"]'); first.classList.add("bad"); msg = t(T.sameDay);
   }
@@ -824,7 +833,8 @@ function payload() {
   const out = {_form: "team-coach-intake", v: 2, path: st.path, submitted: today, consent_date: today, language: st.lang};
   PARQ.forEach(([k]) => out[k] = a[k] === "yes" ? "yes" : "no");
   delete a.parq_none; PARQ.forEach(([k]) => delete a[k]);
-  delete a.pilot_ease; delete a.pilot_confusing; delete a.pilot_join;   // survey answers go in the email, not the profile
+  delete a.pilot_ease; delete a.pilot_confusing; delete a.pilot_join;
+  if (a.max_weekend_min === "unknown") delete a.max_weekend_min;   // "No sé": the coach sets it on the call   // survey answers go in the email, not the profile
   if (st.path === "beginner") {
     const act = {none: ["no", "0"], walkrun: ["no", "5"], run30: ["yes", "8"]}[a.activity] || ["no", "0"];
     out.runs_continuous_30min = act[0]; out.km_week_3m = act[1];
