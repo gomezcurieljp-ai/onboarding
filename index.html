@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex">
 <meta name="description" content="ARION Running Club: inscripción para tu plan de running personalizado.">
 <meta name="theme-color" content="#F3F1EC">
+<meta name="color-scheme" content="only light">
 <meta property="og:title" content="ARION · Running Club">
 <meta property="og:description" content="Tu plan de running a tu ritmo. Unas preguntas para conocerte (5–10 min).">
 <meta property="og:image" content="https://gomezcurieljp-ai.github.io/onboarding/og.png">
@@ -18,19 +19,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <style>
 /* ARION brand (see branding/brand-identity.md): quiet running club. Bone ground, navy ink, burgundy as the only accent,
-   Manrope 600 headings, Hanken Grotesk text, soft corners, no shadows. One step per screen, fixed action bar. */
+   Manrope 600 headings, Hanken Grotesk text, soft corners, no shadows. Light only, like the emails. One step per screen, fixed action bar. */
 :root {
   --bg: #F3F1EC; --surface: #FFFFFF; --ink: #1C2B45; --text: #2E3135; --muted: #5E6168; --line: #E4E0D6; --line-strong: #CFC9BB;
   --accent: #6E1F2F; --accent-ink: #F3F1EC; --accent-soft: #F1E6E7; --inv: #1C2B45; --inv-ink: #F3F1EC; --warn: #9B2C2C;
   --display: "Manrope", "Helvetica Neue", Arial, sans-serif;
   --body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color-scheme: only light;   /* one brand look on every phone, even in dark mode */
 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #141F33; --surface: #1C2B45; --ink: #F3F1EC; --text: #E4E0D6; --muted: #A9AEB8; --line: #2C3B57; --line-strong: #44557A;
-  --accent: #D9A3AC; --accent-ink: #141F33; --accent-soft: #33283A; --inv: #F3F1EC; --inv-ink: #1C2B45; --warn: #F0A8A8; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #141F33; --surface: #1C2B45; --ink: #F3F1EC; --text: #E4E0D6; --muted: #A9AEB8; --line: #2C3B57; --line-strong: #44557A;
-  --accent: #D9A3AC; --accent-ink: #141F33; --accent-soft: #33283A; --inv: #F3F1EC; --inv-ink: #1C2B45; --warn: #F0A8A8; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--text); font: 400 16px/1.6 var(--body); -webkit-font-smoothing: antialiased }
 .wrap { max-width: 620px; margin: 0 auto; padding-block: 20px 128px;
