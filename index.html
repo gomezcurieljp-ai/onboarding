@@ -106,7 +106,7 @@ textarea { min-height: 84px; resize: vertical }
 .chip input:hover + span { border-color: var(--ink) }
 .chip input:checked + span { background: var(--inv); border-color: var(--inv); color: var(--inv-ink) }
 .chip input:checked + span small { color: inherit; opacity: .8 }
-.chips.stack .chip input:checked + span { box-shadow: inset 4px 0 0 var(--accent) }
+.chips.stack .chip input:checked + span { box-shadow: inset 4px 0 0 var(--accent); color: var(--inv-ink) }
 .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px }
 .chip.off span { opacity: .35; text-decoration: line-through; cursor: not-allowed }
 .days .chip span { min-width: 54px; text-align: center; padding: 9px 0; font: 600 13px var(--body) }
@@ -134,7 +134,10 @@ code { font: 500 14px ui-monospace, Menlo, monospace; background: var(--line); b
 
 /* consent */
 .consent { display: grid; grid-template-columns: 22px 1fr; gap: 14px; align-items: start; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: 18px; cursor: pointer }
-.consent input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent) }
+.consent input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--accent) }
+.consent > span { display: grid; gap: 6px; min-width: 0 }
+.consent b { font: 600 16px/1.35 var(--display); color: var(--ink) }
+.consent small { font-size: 14px; line-height: 1.5; color: var(--muted) }
 
 /* action bar */
 .nav { position: fixed; inset: auto 0 0; z-index: 5; background: var(--bg); border-top: 1px solid var(--line);
@@ -244,6 +247,7 @@ const T = {
   back: L("Atrás","Back"), next: L("Continuar","Continue"), finish: L("Terminar","Finish"),
   saved: L("Guardado","Saved"),
   required: L("Responde esta pregunta para continuar.","Answer this to continue."),
+  birthBad: L("Revisa tu fecha de nacimiento.","Check your date of birth."), dateBad: L("Revisa la fecha.","Check the date."),
   emailBad: L("Revisa tu correo, parece incompleto.","Check your email, it looks incomplete."),
   optional: L("opcional","optional"),
   autoTip: L("Lo podemos sacar de Garmin Connect, intervals.icu o TrainingPeaks","We can pull this from Garmin Connect, intervals.icu or TrainingPeaks"),
@@ -286,7 +290,7 @@ const WATCH_MODEL = {id:"watch_model",type:"text",l:L("Modelo o serie","Model or
   h:L("Por ejemplo: Forerunner 165, Series 9, Pace 3. Si no sabes, déjalo vacío.","For example: Forerunner 165, Series 9, Pace 3. Leave it blank if you're not sure."),
   show:a=>a.watch_brand && a.watch_brand!=="none"};
 const HAS_DATA = a => /garmin_connect|intervals|trainingpeaks/.test(a.platforms || "");
-const BIRTH = {id:"birth_date",type:"date",req:1,l:L("Fecha de nacimiento","Date of birth"),min:"1930-01-01",max:new Date(Date.now() - 10 * 365.25 * 864e5).toISOString().slice(0, 10)};
+const BIRTH = {id:"birth_date",type:"date",req:1,l:L("Fecha de nacimiento","Date of birth"),min:"1930-01-01",max:new Date(Date.now() - 14 * 365.25 * 864e5).toISOString().slice(0, 10)};
 const SEX = {id:"sex",type:"one",l:L("Sexo","Sex"),opts:[["F",L("Mujer","Female")],["M",L("Hombre","Male")],["X",L("Prefiero no decir","Prefer not to say")]]};
 const RACE_TYPE = {id:"race_type",type:"one",l:L("Tipo de carrera","Race type"),opts:[["road",L("Ruta / calle","Road")],["trail",L("Trail / montaña","Trail")],["ultra",L("Ultra","Ultra")],["track",L("Pista","Track")],["other",L("Otra","Other")]]};
 const DIST_OTHER = (show) => ({id:"race_distance_other",type:"text",l:L("¿Qué distancia?","Which distance?"),ph:"15K, 50K…",show});
@@ -419,7 +423,7 @@ const S_CONSENT = {key:"consent", eyebrow:L("Último paso","Final step"), h:L("�
   {id:"email_frequency",type:"one",stack:1,req:1,l:L("¿Cada cuándo quieres tus entrenamientos por correo?","How often do you want your workouts by email?"),opts:[
     ["daily",L("Cada día","Every day"),L("La sesión del día, por la mañana.","That day's session, in the morning.")],
     ["weekly",L("Una vez a la semana","Once a week"),L("Un resumen el lunes.","A summary on Monday.")]]},
-  {id:"consent",type:"consent",req:1,l:L("Entreno bajo mi propio riesgo y avisaré a mi coach si tengo dolor, una lesión o una enfermedad. Mis datos se usan solo para entrenarme y se borran si lo pido.",
+  {id:"consent",type:"consent",req:1,head:L("Acepto los términos y condiciones","I accept the terms and conditions"),l:L("Entreno bajo mi propio riesgo y avisaré a mi coach si tengo dolor, una lesión o una enfermedad. Mis datos se usan solo para entrenarme y se borran si lo pido.",
     "I train at my own risk and will tell my coach about any pain, injury or illness. My data is used only for my training and is deleted on request.")},
 ]};
 const S_PILOT = {key:"pilot", eyebrow:L("Tu opinión","Your opinion"), h:L("Tres preguntas rápidas.","Three quick questions."),
@@ -508,7 +512,7 @@ function field(q) {
   }
   if (q.type === "consent") {
     const i = el("input", {type: "checkbox", id, name: "consent", value: "yes"}); i.checked = st.a.consent === "yes";
-    return el("div", {class: "q", "data-q": "consent"}, [el("label", {class: "consent"}, [i, el("span", {text: t(q.l)})])]);
+    return el("div", {class: "q", "data-q": "consent"}, [el("label", {class: "consent"}, [i, el("span", {}, [el("b", {text: t(q.head)}), el("small", {text: t(q.l)})])])]);
   }
   if (q.type === "trips") {
     const fs = el("fieldset", {class: "q", "data-q": q.id});
@@ -706,6 +710,7 @@ function validate() {
     if (q.type === "parq") ok = a.parq_none === "yes" || PARQ.some(([k]) => a[k] === "yes");
     else if (q.req) ok = !!a[q.id];
     if (ok && q.type === "email" && a[q.id]) { ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(a[q.id]); if (!ok) msg = t(T.emailBad); }
+    if (ok && q.type === "date" && a[q.id] && ((q.min && a[q.id] < q.min) || (q.max && a[q.id] > q.max))) { ok = false; msg = t(q.id === "birth_date" ? T.birthBad : T.dateBad); }
     if (!ok) { const b = form.querySelector(`[data-q="${q.id}"]`); if (b) b.classList.add("bad"); first = first || b; }
   }
   if (!first && a.long_run_day && a.long_run_day === a.quality_day && flatQ(sc).some(q => q.id === "quality_day")) {
