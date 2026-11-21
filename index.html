@@ -291,7 +291,7 @@ const SEX = {id:"sex",type:"one",l:L("Sexo","Sex"),opts:[["F",L("Mujer","Female"
 const RACE_TYPE = {id:"race_type",type:"one",l:L("Tipo de carrera","Race type"),opts:[["road",L("Ruta / calle","Road")],["trail",L("Trail / montaña","Trail")],["ultra",L("Ultra","Ultra")],["track",L("Pista","Track")],["other",L("Otra","Other")]]};
 const CITY = {id:"city",type:"text",l:L("Ciudad donde entrenas","City you train in"),h:L("Con ella ajustamos tus ritmos a la altitud","We use it to adjust your paces for altitude"),ac:"address-level2"};
 const RACE_TYPE_OTHER = (show) => ({id:"race_type_other",type:"text",req:1,l:L("¿Qué tipo de carrera?","Which type of race?"),ph:"Obstáculos, triatlón, duatlón…",show});
-const DIST_OTHER = (show) => ({id:"race_distance_other",type:"text",l:L("¿Qué distancia?","Which distance?"),ph:"15K, 50K…",show});
+const DIST_OTHER = (show) => ({id:"race_distance_other",type:"text",l:L("¿Qué distancia?","Which distance?"),h:L("Con unidad: km o millas","With the unit: km or miles"),ph:"15K, 50K, 100 millas",show});
 const S_ABOUT_BEG = {key:"about", eyebrow:L("Sobre ti","About you"), h:L("Empecemos por lo básico","Let's start with the basics"), q:[
   {id:"name",type:"text",req:1,l:L("¿Cómo te llamas?","What's your name?"),ac:"name"},
   {id:"email",type:"email",req:1,l:L("Tu correo","Your email"),h:L("Aquí te llegan los entrenamientos","Your workouts arrive here"),ac:"email"},
@@ -525,7 +525,7 @@ function field(q) {
       const trips = (st.a.trips && st.a.trips.length) ? st.a.trips : [{city: "", from: "", to: ""}];
       const list = el("div", {class: "trips"});
       trips.forEach((tr, i) => {
-        const inp = (k, type, ph) => { const x = el("input", {type, name: `trip_${k}_${i}`, id: `q-trip-${k}-${i}`, placeholder: ph || null, autocomplete: "off"}); x.value = tr[k] || ""; return x; };
+        const inp = (k, type, ph) => { const x = el("input", {type, name: `trip_${k}_${i}`, id: `q-trip-${k}-${i}`, placeholder: ph || null, autocomplete: "off"}); if (type === "date") x.min = new Date().toISOString().slice(0, 10); x.value = tr[k] || ""; return x; };
         const row = el("div", {class: "trip"}, [
           el("label", {}, [document.createTextNode(t(T.city)), inp("city", "text", st.lang === "es" ? "Monterrey" : "Austin")]),
           el("label", {}, [document.createTextNode(t(T.from)), inp("from", "date")]),
@@ -771,7 +771,7 @@ function summary() {   // flat rows for the email
 }
 async function send() {
   const s = summary(), name = st.a.name || "Atleta";
-  const subject = (REVIEW ? "[REVISIÓN] " : "") + (PILOT ? "[PILOTO] " : "") + `Nuevo atleta: ${name} · ${ES_PATH[st.path]}` + (s["Salud"].startsWith("REVISAR") ? " · REVISAR SALUD" : "");
+  const subject = (REVIEW ? "[REVISIÓN] " : "") + (PILOT ? "[PILOTO] " : "") + `Nuevo atleta: ${name} · ${ES_PATH[st.path]}` + (s["Salud"].startsWith("REVISAR") ? " · REVISAR SALUD" : "") + (/[a-záéíóú]{3}/i.test(st.a.injuries_current || "") && !/^(no|ninguna?|nada)\b/i.test((st.a.injuries_current || "").trim()) ? " · LESIÓN ACTUAL" : "");
   const body = {access_key: FORM_KEY, subject, from_name: BRAND, replyto: st.a.email || "", botcheck: "",
     ...s, ...(REVIEW && fbText() ? {"Feedback de prueba": (Object.assign(FB_LABELS, st.fbLabels || {}), fbText())} : {}),
     "Código de registro": block()};
