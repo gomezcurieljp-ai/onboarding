@@ -293,15 +293,17 @@ const HAS_DATA = a => /garmin_connect|intervals|trainingpeaks/.test(a.platforms 
 const BIRTH = {id:"birth_date",type:"date",req:1,l:L("Fecha de nacimiento","Date of birth"),min:"1930-01-01",max:new Date(Date.now() - 14 * 365.25 * 864e5).toISOString().slice(0, 10)};
 const SEX = {id:"sex",type:"one",l:L("Sexo","Sex"),opts:[["F",L("Mujer","Female")],["M",L("Hombre","Male")],["X",L("Prefiero no decir","Prefer not to say")]]};
 const RACE_TYPE = {id:"race_type",type:"one",l:L("Tipo de carrera","Race type"),opts:[["road",L("Ruta / calle","Road")],["trail",L("Trail / montaña","Trail")],["ultra",L("Ultra","Ultra")],["track",L("Pista","Track")],["other",L("Otra","Other")]]};
+const CITY = {id:"city",type:"text",l:L("Ciudad donde entrenas","City you train in"),h:L("Con ella ajustamos tus ritmos a la altitud.","We use it to adjust your paces for altitude."),ac:"address-level2"};
 const DIST_OTHER = (show) => ({id:"race_distance_other",type:"text",l:L("¿Qué distancia?","Which distance?"),ph:"15K, 50K…",show});
 const S_ABOUT_BEG = {key:"about", eyebrow:L("Sobre ti","About you"), h:L("Empecemos por lo básico.","Let's start with the basics."), q:[
   {id:"name",type:"text",req:1,l:L("¿Cómo te llamas?","What's your name?"),ac:"name"},
   {id:"email",type:"email",req:1,l:L("Tu correo","Your email"),h:L("Aquí te llegan los entrenamientos.","Your workouts arrive here."),ac:"email"},
   {grid:[BIRTH, SEX]},
+  CITY,
 ]};
-const S_ABOUT_RUN = {...S_ABOUT_BEG, q:[...S_ABOUT_BEG.q,
+const S_ABOUT_RUN = {...S_ABOUT_BEG, q:[...S_ABOUT_BEG.q.filter(q => q !== CITY),
   {grid:[{id:"height_cm",type:"number",l:L("Estatura (cm)","Height (cm)")},{id:"weight_kg",type:"number",l:L("Peso (kg)","Weight (kg)")}]},
-  {id:"city",type:"text",l:L("Ciudad donde entrenas","City you train in"),h:L("Con ella ajustamos tus ritmos a la altitud.","We use it to adjust your paces for altitude.")},
+  CITY,
 ]};
 const S_HEALTH = (full) => ({key:"health", eyebrow:L("Salud","Health"), h:L("Antes de empezar, tu salud.","First, your health."),
   p:L("Marca las que apliquen. Si alguna aplica, solo necesitamos el visto bueno de tu médico antes de empezar.","Tick any that apply. If one does, we just need your doctor's OK before you start."), q:[
