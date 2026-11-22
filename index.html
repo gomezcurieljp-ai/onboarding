@@ -51,6 +51,7 @@ body { background: var(--bg); color: var(--text); font: 400 16px/1.6 var(--body)
 h1, h2 { font-family: var(--display); font-weight: 600; color: var(--ink); letter-spacing: -.015em; text-wrap: balance; margin: 0; line-height: 1.12 }
 h1 { font-size: clamp(2rem, 7vw, 2.75rem) }
 h1 em { font-style: normal; color: var(--accent) }
+.screen > header h1 em { display: block; margin-top: .15em }   /* second line of the welcome title */
 h2 { font-size: clamp(1.5rem, 5vw, 1.9rem) }
 .lede { color: var(--muted); margin: 0; max-width: 52ch; font-size: 17px }
 .screen { display: grid; gap: 28px; margin-top: 32px }
@@ -71,6 +72,10 @@ h2 { font-size: clamp(1.5rem, 5vw, 1.9rem) }
 .reassure b { display: block; color: var(--ink); font: 600 15px var(--display) }
 .motto { margin: 0; color: var(--muted); font-size: 14px }
 .motto span { font-family: var(--display); color: var(--ink); font-weight: 600 }
+.paren { font: 400 12px/1.45 var(--body); color: var(--muted); letter-spacing: 0 }   /* everything in parentheses: small but readable */
+.title-gr { margin: 0 0 18px; font: 600 clamp(1.6rem, 6vw, 2rem)/1 var(--display); letter-spacing: .12em; color: var(--ink) }
+.title-gr .paren { margin-left: .5em }
+.motto .paren { display: block; margin-top: 2px }
 
 /* fields */
 .q { display: grid; gap: 10px; min-width: 0; border: 0; padding: 0; margin: 0; align-content: start }
@@ -229,12 +234,12 @@ const PARQ = [
 
 const T = {
   welcomeEyebrow: L("Running club · CDMX","Running club · Mexico City"),
-  welcomeH: L("Corre a tu ritmo. <em>Nosotros armamos el plan</em>","Run at your own pace. <em>We build the plan</em>"),
+  welcomeH: L("Corre a tu ritmo <em>Nosotros armaremos el plan</em>","Run at your own pace <em>We will build the plan</em>"),
   welcomeP: L("Unas preguntas para conocerte. Con eso armamos tu primer bloque de cuatro semanas y lo enviamos directo a tu reloj",
               "A few questions so we can get to know you. Then we build your first four-week block and send it straight to your watch"),
   pathQ: L("¿Dónde estás hoy?","Where are you today?"),
   pilotNote: L("Versión de prueba: al final te pedimos tu opinión en 3 preguntas","Test version: at the end we ask for your opinion in 3 questions"),
-  motto: L("apresúrate despacio: progreso paciente, sin lesiones","make haste slowly: patient progress, no injuries"),
+  motto: L("(avanza con constancia: la paciencia te lleva más lejos que la prisa · César Augusto)","(keep a steady pace: patience takes you further than haste · Augustus)"),
   begT: L("Estoy empezando","I'm just starting"), begS: L("Nunca he corrido, o vuelvo después de mucho tiempo","I've never run, or I'm coming back after a long break"), begI: L("5 min","5 min"),
   runT: L("Ya corro","I already run"), runS: L("Corro con regularidad y puedo hacer 30 minutos seguidos","I run regularly and can go 30 minutes non-stop"), runI: L("10 min","10 min"),
   r1h: L("Sin contraseñas","No passwords"), r1p: L("Nunca te pedimos tu cuenta de Garmin","We never ask for your Garmin login"),
@@ -578,7 +583,7 @@ function field(q) {
 /* ---- Screens ---- */
 function renderWelcome() {
   const sc = el("div", {class: "screen"});
-  sc.append(el("header", {}, [el("p", {class: "eyebrow", text: t(T.welcomeEyebrow)}), el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
+  sc.append(el("header", {}, [el("p", {class: "title-gr"}, [el("span", {text: "ΑΡΙΩΝ", lang: "grc"}), el("small", {class: "paren", text: "(Arion)"})]), el("p", {class: "eyebrow", text: t(T.welcomeEyebrow)}), el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
   const paths = el("div", {class: "paths", role: "group", "aria-label": t(T.pathQ)});
   [["beginner", T.begT, T.begS, T.begI], ["runner", T.runT, T.runS, T.runI]].forEach(([p, h, s, i]) => {
     const b = el("button", {type: "button", class: "path", id: "path-" + p}, [el("strong", {text: t(h)}), el("small", {text: t(s)}), el("i", {text: t(i)})]);
@@ -588,7 +593,7 @@ function renderWelcome() {
   sc.append(el("h2", {text: t(T.pathQ)}), paths);
   sc.append(el("ul", {class: "reassure"}, [[T.r1h, T.r1p], [T.r2h, T.r2p], [T.r3h, T.r3p]].map(([h, p]) => el("li", {}, [el("b", {text: t(h)}), document.createTextNode(t(p))]))));
   if (PILOT) sc.append(el("p", {class: "note", text: t(T.pilotNote)}));
-  sc.append(el("p", {class: "motto"}, [el("span", {text: "σπεῦδε βραδέως", lang: "grc"}), document.createTextNode(" · " + t(T.motto))]));
+  sc.append(el("p", {class: "motto"}, [el("span", {text: "σπεῦδε βραδέως", lang: "grc"}), document.createTextNode(" "), el("small", {class: "paren", text: t(T.motto)})]));
   return sc;
 }
 function renderStep() {
