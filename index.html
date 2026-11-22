@@ -244,7 +244,7 @@ const T = {
   back: L("Atrás","Back"), next: L("Continuar","Continue"), finish: L("Terminar","Finish"),
   saved: L("Guardado","Saved"),
   required: L("Responde esta pregunta para continuar","Answer this to continue"),
-  birthBad: L("Revisa tu fecha de nacimiento","Check your date of birth"), dateBad: L("Revisa la fecha","Check the date"), tripBad: L("Revisa las fechas del viaje: tienen que ser de hoy en adelante y el regreso después de la salida","Check the trip dates: they must be from today on, and the return after the departure"), raceDateBad: L("Esa fecha ya pasó: elige la fecha de tu próxima carrera","That date has passed: pick the date of your next race"),
+  birthBad: L("Revisa tu fecha de nacimiento. Por ahora ARION es solo para mayores de 18 años","Check your date of birth. For now ARION is only for adults 18 and over"), dateBad: L("Revisa la fecha","Check the date"), tripBad: L("Revisa las fechas del viaje: tienen que ser de hoy en adelante y el regreso después de la salida","Check the trip dates: they must be from today on, and the return after the departure"), raceDateBad: L("Esa fecha ya pasó: elige la fecha de tu próxima carrera","That date has passed: pick the date of your next race"),
   emailBad: L("Revisa tu correo, parece incompleto","Check your email, it looks incomplete"),
   optional: L("opcional","optional"),
   autoTip: L("Lo podemos sacar de Garmin Connect, intervals.icu o TrainingPeaks","We can pull this from Garmin Connect, intervals.icu or TrainingPeaks"),
@@ -287,7 +287,7 @@ const WATCH_MODEL = {id:"watch_model",type:"text",l:L("Modelo o serie","Model or
   h:L("Por ejemplo: Forerunner 165, Series 9, Pace 3. Si no sabes, déjalo vacío","For example: Forerunner 165, Series 9, Pace 3. Leave it blank if you're not sure"),
   show:a=>a.watch_brand && a.watch_brand!=="none"};
 const HAS_DATA = a => /garmin_connect|intervals|trainingpeaks/.test(a.platforms || "");
-const BIRTH = {id:"birth_date",type:"date",req:1,l:L("Fecha de nacimiento","Date of birth"),min:"1930-01-01",max:new Date(Date.now() - 14 * 365.25 * 864e5).toISOString().slice(0, 10)};
+const BIRTH = {id:"birth_date",type:"date",req:1,l:L("Fecha de nacimiento","Date of birth"),min:"1930-01-01",max:(d => (d.setFullYear(d.getFullYear() - 18), d.toISOString().slice(0, 10)))(new Date())};
 const SEX = {id:"sex",type:"one",l:L("Sexo","Sex"),opts:[["F",L("Mujer","Female")],["M",L("Hombre","Male")],["X",L("Prefiero no decir","Prefer not to say")]]};
 const RACE_TYPE = {id:"race_type",type:"one",l:L("Tipo de carrera","Race type"),opts:[["road",L("Ruta / calle","Road")],["trail",L("Trail / montaña","Trail")],["ultra",L("Ultra","Ultra")],["track",L("Pista","Track")],["other",L("Otra","Other")]]};
 const CITY = {id:"city",type:"text",l:L("Ciudad donde entrenas","City you train in"),h:L("Con ella ajustamos tus ritmos a la altitud","We use it to adjust your paces for altitude"),ac:"address-level2"};
@@ -449,7 +449,7 @@ const STEPS_TXT = [
   [L("Crea tu cuenta gratis","Create a free account"), L('Abre <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> y toca <b>Sign up</b>. Lo más rápido es entrar con Google','Open <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> and tap <b>Sign up</b>. Signing in with Google is quickest')],
   [L("Conecta tu Garmin","Connect your Garmin"), L('Toca tu foto (arriba a la derecha) y luego <b>Settings</b>. En la sección <b>Garmin</b> toca <b>Connect</b>: se abre la página oficial de Garmin. Entra con tu cuenta de Garmin Connect y toca <b>Aceptar</b>','Tap your photo (top right), then <b>Settings</b>. In the <b>Garmin</b> section tap <b>Connect</b>: Garmin\'s official page opens. Sign in with your Garmin Connect account and tap <b>Agree</b>')],
   [L("Activa el envío al reloj","Turn on sending to your watch"), L('Al volver a intervals.icu, en esa misma sección <b>Garmin</b>, marca <b>Upload planned workouts</b>. Con eso tus entrenamientos llegan solos a tu reloj','Back in intervals.icu, in that same <b>Garmin</b> section, tick <b>Upload planned workouts</b>. That way your workouts reach your watch on their own')],
-  [L("Copia tu ID y pégalo abajo","Copy your ID and paste it below"), L('En <b>Settings</b>, baja hasta <b>Developer Settings</b>: ahí aparece tu <b>Athlete ID</b>, un código como <code>i123456</code>','In <b>Settings</b>, scroll to <b>Developer Settings</b>: your <b>Athlete ID</b> is there, a code like <code>i123456</code>')],
+  [L("Copia tu ID y pégalo abajo","Copy your ID and paste it below"), L('En <b>Settings</b> (Configuración), baja hasta <b>Developer Settings</b> (Configuración de desarrollador): ahí aparece tu <b>Athlete ID</b> (ID del atleta), un código como <code>i123456</code>','In <b>Settings</b>, scroll to <b>Developer Settings</b>: your <b>Athlete ID</b> is there, a code like <code>i123456</code>')],
 ];
 
 /* ---- State ---- */
