@@ -73,6 +73,16 @@ h2 { font-size: clamp(1.5rem, 5vw, 1.9rem) }
 .title-gr { margin: 0 0 18px; font: 600 clamp(1.6rem, 6vw, 2rem)/1 var(--display); letter-spacing: .12em; color: var(--ink) }
 .title-gr .paren { display: block; margin-top: 8px }   /* parentheses always go under the word */
 .motto .paren { display: block; margin-top: 2px }
+/* Intro page: logo and name centred, who Arion was, why we are ARION */
+.intro { text-align: center; justify-items: center }
+.intro-logo svg { width: 104px; height: 104px; display: block; margin: 0 auto }
+.intro .title-gr { margin: 18px 0 0; font-size: clamp(2rem, 9vw, 2.6rem) }
+.intro section { max-width: 36ch; display: grid; gap: 8px }
+.intro h2 { font-size: 1.25rem }
+.intro p { margin: 0; color: var(--text) }
+.intro .paren { display: block }
+.intro .btn { margin-top: 4px; min-width: 200px }
+body.on-intro .top .mark { visibility: hidden }   /* the big centred logo replaces the small one */
 
 /* fields */
 .q { display: grid; gap: 10px; min-width: 0; border: 0; padding: 0; margin: 0; align-content: start }
@@ -232,6 +242,16 @@ const PARQ = [
 const T = {
   welcomeH: L("Corre a tu ritmo <em>Nosotros armaremos el plan</em>","Run at your own pace <em>We will build the plan</em>"),
   welcomeP: L("Tu primer bloque de 4 semanas, directo a tu reloj","Your first 4-week block, straight to your watch"),
+  whoH: L("Quién fue Arion","Who was Arion"),
+  whoP: L("Arion fue el caballo inmortal y el más veloz de la mitología griega. Nadie podía alcanzarlo, y su velocidad salvó al rey Adrasto en la guerra de Tebas",
+          "Arion was the immortal horse, the fastest in Greek mythology. No one could catch him, and his speed saved King Adrastus in the war against Thebes"),
+  whyH: L("Por qué somos ARION","Why we are ARION"),
+  whyP1: L("Platón comparó el alma con un auriga que guía a dos caballos. Buscamos gente que quiera tomar las riendas de sí misma",
+           "Plato likened the soul to a charioteer guiding two horses. We're looking for people who want to take their own reins"),
+  whyRef: L("(la alegoría del carro, Fedro · Platón)","(the chariot allegory, Phaedrus · Plato)"),
+  whyP2: L("Somos un equipo de running en CDMX: personas afines que quieren mejorar sin el ruido de las redes ni la comparación constante. Entrenamos lejos de los reflectores, por y para nosotros",
+           "We're a running team in Mexico City: like-minded people who want to improve without the noise of social media or constant comparison. We train away from the spotlight, for ourselves"),
+  start: L("Empezar","Start"),
   pathQ: L("¿Dónde estás hoy?","Where are you today?"),
   pilotNote: L("Versión de prueba · al final, 3 preguntas","Test version · 3 questions at the end"),
   motto: L("(avanza con constancia: la paciencia te lleva más lejos que la prisa · César Augusto)","(keep a steady pace: patience takes you further than haste · Augustus)"),
@@ -566,7 +586,7 @@ function field(q) {
 /* ---- Screens ---- */
 function renderWelcome() {
   const sc = el("div", {class: "screen"});
-  sc.append(el("header", {}, [el("p", {class: "title-gr"}, [el("span", {text: "ΑΡΙΩΝ", lang: "grc"}), el("small", {class: "paren", text: "(Arion)"})]), el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
+  sc.append(el("header", {}, [el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
   const paths = el("div", {class: "paths", role: "group", "aria-label": t(T.pathQ)});
   [["beginner", T.begT, T.begS, T.begI], ["runner", T.runT, T.runS, T.runI]].forEach(([p, h, s, i]) => {
     const b = el("button", {type: "button", class: "path", id: "path-" + p}, [el("strong", {text: t(h)}), el("small", {text: t(s)}), el("i", {text: t(i)})]);
@@ -575,7 +595,18 @@ function renderWelcome() {
   });
   sc.append(el("h2", {text: t(T.pathQ)}), paths);
   if (PILOT) sc.append(el("p", {class: "note", text: t(T.pilotNote)}));
-  sc.append(el("p", {class: "motto"}, [el("span", {text: "σπεῦδε βραδέως", lang: "grc"}), document.createTextNode(" "), el("small", {class: "paren", text: t(T.motto)})]));
+  return sc;
+}
+function renderIntro() {
+  const sc = el("div", {class: "screen intro"});
+  const logo = el("div", {class: "intro-logo"}); logo.innerHTML = document.querySelector(".top .mark svg").outerHTML;
+  sc.append(el("header", {}, [logo, el("h1", {class: "title-gr"}, [el("span", {text: "ΑΡΙΩΝ", lang: "grc"}), el("small", {class: "paren", text: "(Arion)"})])]));
+  sc.append(el("section", {}, [el("h2", {text: t(T.whoH)}), el("p", {text: t(T.whoP)})]));
+  sc.append(el("section", {}, [el("h2", {text: t(T.whyH)}), el("p", {text: t(T.whyP1)}), el("small", {class: "paren", text: t(T.whyRef)}), el("p", {text: t(T.whyP2)})]));
+  const go = el("button", {type: "button", class: "btn primary", id: "start", text: t(T.start)});
+  go.addEventListener("click", () => { st.intro = true; save(); render(); scrollTo(0, 0); });
+  sc.append(go);
+  sc.append(el("p", {class: "motto"}, [el("span", {text: "σπεῦδε βραδέως", lang: "grc"}), el("small", {class: "paren", text: t(T.motto)})]));
   return sc;
 }
 function renderStep() {
@@ -652,7 +683,9 @@ function render() {
     document.getElementById("back").textContent = t(T.back);
     document.getElementById("next").textContent = st.step === flow.length - 1 ? t(T.finish) : t(T.next);
   }
-  form.replaceChildren(st.done && flow ? renderDone() : inStep ? renderStep() : renderWelcome());
+  const onIntro = !flow && !st.intro;
+  document.body.classList.toggle("on-intro", onIntro);
+  form.replaceChildren(st.done && flow ? renderDone() : inStep ? renderStep() : onIntro ? renderIntro() : renderWelcome());
   if (REVIEW) {
     if (!document.querySelector(".review-tag")) document.getElementById("brand").after(el("span", {class: "review-tag", text: "MODO REVISIÓN"}));
     const b = document.getElementById("fb-btn"); b.hidden = false;
