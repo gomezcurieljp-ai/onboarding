@@ -464,6 +464,7 @@ const STEPS_TXT = [
 const KEY = "team-coach-intake-v2";
 let st = {lang: "es", path: null, step: 0, a: {}, done: false};
 try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && typeof s === "object") st = {...st, ...s}; } catch (e) {}
+if (!st.path) st.intro = false;   /* the intro page shows on every new visit until a path is chosen */
 const t = o => o[st.lang];
 const form = document.getElementById("f");
 let saveTimer;
@@ -595,6 +596,9 @@ function renderWelcome() {
   });
   sc.append(el("h2", {text: t(T.pathQ)}), paths);
   if (PILOT) sc.append(el("p", {class: "note", text: t(T.pilotNote)}));
+  const bk = el("button", {type: "button", class: "btn quiet", text: "← " + t(T.back)});
+  bk.addEventListener("click", () => { st.intro = false; save(); render(); scrollTo(0, 0); });
+  sc.append(el("div", {}, [bk]));
   return sc;
 }
 function renderIntro() {
