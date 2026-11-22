@@ -67,9 +67,6 @@ h2 { font-size: clamp(1.5rem, 5vw, 1.9rem) }
 .path strong { font: 600 1.3rem/1.2 var(--display); color: var(--ink) }
 .path small { grid-column: 1; color: var(--muted); font-size: 15px }
 .path i { grid-row: 1 / span 2; grid-column: 2; font-style: normal; font: 600 12px var(--body); letter-spacing: .04em; border: 1px solid var(--line-strong); color: var(--muted); border-radius: 999px; padding: 4px 10px; white-space: nowrap }
-.reassure { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding: 20px 0 0; border-top: 1px solid var(--line); margin: 0; list-style: none }
-.reassure li { font-size: 14px; color: var(--muted) }
-.reassure b { display: block; color: var(--ink); font: 600 15px var(--display) }
 .motto { margin: 0; color: var(--muted); font-size: 14px }
 .motto span { font-family: var(--display); color: var(--ink); font-weight: 600 }
 .paren { font: 400 12px/1.45 var(--body); color: var(--muted); letter-spacing: 0 }   /* everything in parentheses: small but readable */
@@ -233,18 +230,13 @@ const PARQ = [
 ];
 
 const T = {
-  welcomeEyebrow: L("Running club · CDMX","Running club · Mexico City"),
   welcomeH: L("Corre a tu ritmo <em>Nosotros armaremos el plan</em>","Run at your own pace <em>We will build the plan</em>"),
-  welcomeP: L("Unas preguntas para conocerte. Con eso armamos tu primer bloque de cuatro semanas y lo enviamos directo a tu reloj",
-              "A few questions so we can get to know you. Then we build your first four-week block and send it straight to your watch"),
+  welcomeP: L("Tu primer bloque de 4 semanas, directo a tu reloj","Your first 4-week block, straight to your watch"),
   pathQ: L("¿Dónde estás hoy?","Where are you today?"),
-  pilotNote: L("Versión de prueba: al final te pedimos tu opinión en 3 preguntas","Test version: at the end we ask for your opinion in 3 questions"),
+  pilotNote: L("Versión de prueba · al final, 3 preguntas","Test version · 3 questions at the end"),
   motto: L("(avanza con constancia: la paciencia te lleva más lejos que la prisa · César Augusto)","(keep a steady pace: patience takes you further than haste · Augustus)"),
-  begT: L("Estoy empezando","I'm just starting"), begS: L("Nunca he corrido, o vuelvo después de mucho tiempo","I've never run, or I'm coming back after a long break"), begI: L("5 min","5 min"),
-  runT: L("Ya corro","I already run"), runS: L("Corro con regularidad y puedo hacer 30 minutos seguidos","I run regularly and can go 30 minutes non-stop"), runI: L("10 min","10 min"),
-  r1h: L("Sin contraseñas","No passwords"), r1p: L("Nunca te pedimos tu cuenta de Garmin","We never ask for your Garmin login"),
-  r2h: L("Se guarda solo","Saves as you go"), r2p: L("Puedes cerrar y volver después","Close it and come back any time"),
-  r3h: L("Privado","Private"), r3p: L("Tus respuestas solo van a tu coach","Your answers only go to your coach"),
+  begT: L("Estoy empezando","I'm just starting"), begS: L("Nunca he corrido o regreso tras una pausa larga","Never run, or back after a long break"), begI: L("5 min","5 min"),
+  runT: L("Ya corro","I already run"), runS: L("Corro seguido y aguanto 30 min sin parar","I run regularly, 30 min non-stop"), runI: L("10 min","10 min"),
   step: L("Paso","Step"), of: L("de","of"),
   back: L("Atrás","Back"), next: L("Continuar","Continue"), finish: L("Terminar","Finish"),
   saved: L("Guardado","Saved"),
@@ -258,20 +250,19 @@ const T = {
   addTrip: L("+ Otro viaje","+ Another trip"), removeTrip: L("Quitar","Remove"),
   doneEyebrow: L("Inscripción recibida","Registration received"), sendEyebrow: L("Un paso más","One more step"),
   doneH: L("Envía tus respuestas <em>a tu coach</em>","Send your answers <em>to your coach</em>"),
-  doneP: L("Envía tus respuestas a tu coach por WhatsApp. Toca el botón, elige a tu coach y envía el mensaje tal cual",
-           "Send your answers to your coach on WhatsApp. Tap the button, pick your coach and send the message as it is"),
+  doneP: L("Toca el botón y envía el mensaje tal cual","Tap the button and send the message as it is"),
   wa: L("Enviar por WhatsApp","Send on WhatsApp"), copy: L("Copiar mensaje","Copy message"),
   copied: L("Copiado. Pégalo en el chat con tu coach","Copied. Paste it into the chat with your coach"),
   copyFail: L("Selecciona el texto de abajo y cópialo","Select the text below and copy it"),
   showMsg: L("Ver el mensaje","View the message"),
   msgIntro: L("Hola, aquí están mis respuestas para empezar:","Hi, here are my answers to get started:"),
   nextH: L("Qué sigue","What happens next"),
-  n1: L("Tu coach te escribe para una charla de 15 minutos","Your coach reaches out for a 15-minute chat"),
-  n2: L("Recibes tu primer bloque de cuatro semanas. Cada semana se ajusta a lo que realmente hiciste","You get your first four-week block. Each week adapts to what you actually did"),
-  n3: L("Los entrenamientos aparecen en tu reloj. Si no los ves, abre la app Garmin Connect para sincronizar","Workouts appear on your watch. If you don't see them, open the Garmin Connect app to sync"),
+  n1: L("Tu coach te escribe para una llamada de 15 min","Your coach sets up a 15-min call"),
+  n2: L("Recibes tu bloque de 4 semanas","You get your 4-week block"),
+  n3: L("Cada semana se ajusta a lo que hiciste","Each week adapts to what you did"),
   sendingH: L("Enviando…","Sending…"),
-  sentH: L("Gracias. <em>Ya recibimos tus respuestas</em>","Thank you. <em>We have your answers</em>"),
-  sentP: L("Tu coach las revisa y te escribe pronto","Your coach will review them and be in touch soon"),
+  sentH: L("Gracias <em>Ya recibimos tus respuestas</em>","Thank you <em>We have your answers</em>"),
+  sentP: L("Tu coach te escribe pronto","Your coach will be in touch soon"),
   failP: L("No pudimos enviarlo automáticamente. Inténtalo otra vez o mándalo por WhatsApp","We couldn't send it automatically. Try again, or send it on WhatsApp"),
   retry: L("Reintentar envío","Try again"),
   restart: L("Empezar de nuevo","Start over"), restartSure: L("Toca otra vez para borrar todo","Tap again to erase everything"),
@@ -289,18 +280,18 @@ const WATCH_BRAND = {id:"watch_brand",type:"one",req:1,l:L("¿Qué reloj tienes?
   ["garmin",L("Garmin","Garmin")],["apple",L("Apple Watch","Apple Watch")],["coros",L("COROS","COROS")],["suunto",L("Suunto","Suunto")],
   ["polar",L("Polar","Polar")],["other",L("Otro","Other")],["none",L("No tengo reloj","No watch")]]};
 const WATCH_MODEL = {id:"watch_model",type:"text",l:L("Modelo o serie","Model or series"),
-  h:L("Por ejemplo: Forerunner 165, Series 9, Pace 3. Si no sabes, déjalo vacío","For example: Forerunner 165, Series 9, Pace 3. Leave it blank if you're not sure"),
+  ph:"Forerunner 165, Series 9, Pace 3",
   show:a=>a.watch_brand && a.watch_brand!=="none"};
 const HAS_DATA = a => /garmin_connect|intervals|trainingpeaks/.test(a.platforms || "");
 const BIRTH = {id:"birth_date",type:"date",req:1,l:L("Fecha de nacimiento","Date of birth"),min:"1930-01-01",max:(d => (d.setFullYear(d.getFullYear() - 18), d.toISOString().slice(0, 10)))(new Date())};
 const SEX = {id:"sex",type:"one",l:L("Sexo","Sex"),opts:[["F",L("Mujer","Female")],["M",L("Hombre","Male")],["X",L("Prefiero no decir","Prefer not to say")]]};
 const RACE_TYPE = {id:"race_type",type:"one",l:L("Tipo de carrera","Race type"),opts:[["road",L("Ruta / calle","Road")],["trail",L("Trail / montaña","Trail")],["ultra",L("Ultra","Ultra")],["track",L("Pista","Track")],["other",L("Otra","Other")]]};
-const CITY = {id:"city",type:"text",l:L("Ciudad donde entrenas","City you train in"),h:L("Con ella ajustamos tus ritmos a la altitud","We use it to adjust your paces for altitude"),ac:"address-level2"};
+const CITY = {id:"city",type:"text",l:L("Ciudad donde entrenas","City you train in"),ac:"address-level2"};
 const RACE_TYPE_OTHER = (show) => ({id:"race_type_other",type:"text",req:1,l:L("¿Qué tipo de carrera?","Which type of race?"),ph:"Obstáculos, triatlón, duatlón…",show});
 const DIST_OTHER = (show) => ({id:"race_distance_other",type:"text",l:L("¿Qué distancia?","Which distance?"),h:L("Con unidad: km o millas","With the unit: km or miles"),ph:"15K, 50K, 100 millas",show});
-const S_ABOUT_BEG = {key:"about", eyebrow:L("Sobre ti","About you"), h:L("Empecemos por lo básico","Let's start with the basics"), q:[
+const S_ABOUT_BEG = {key:"about", eyebrow:L("Sobre ti","About you"), h:L("Sobre ti","About you"), q:[
   {id:"name",type:"text",req:1,l:L("¿Cómo te llamas?","What's your name?"),ac:"name"},
-  {id:"email",type:"email",req:1,l:L("Tu correo","Your email"),h:L("Aquí te llegan los entrenamientos","Your workouts arrive here"),ac:"email"},
+  {id:"email",type:"email",req:1,l:L("Tu correo","Your email"),ac:"email"},
   {grid:[BIRTH, SEX]},
   CITY,
 ]};
@@ -308,60 +299,58 @@ const S_ABOUT_RUN = {...S_ABOUT_BEG, q:[...S_ABOUT_BEG.q.filter(q => q !== CITY)
   {grid:[{id:"height_cm",type:"number",l:L("Estatura (cm)","Height (cm)")},{id:"weight_kg",type:"number",l:L("Peso (kg)","Weight (kg)")}]},
   CITY,
 ]};
-const S_HEALTH = (full) => ({key:"health", eyebrow:L("Salud","Health"), h:L("Antes de empezar, tu salud","First, your health"),
-  p:L("Marca las que apliquen. Si alguna aplica, solo necesitamos el visto bueno de tu médico antes de empezar","Tick any that apply. If one does, we just need your doctor's OK before you start"), q:[
+const S_HEALTH = (full) => ({key:"health", eyebrow:L("Salud","Health"), h:L("Tu salud","Your health"),
+  p:L("Marca las que apliquen. Si alguna aplica, pediremos el visto bueno de tu médico","Tick any that apply. If one does, we'll ask for your doctor's OK"), q:[
   {id:"parq",type:"parq",req:1},
   {id:"injuries_current",type:"textarea",l:full ? L("Lesiones actuales","Current injuries") : L("¿Algo te duele hoy o te lastimaste este año?","Anything hurting today, or an injury this year?"),
-    h:full ? L("Dónde y desde cuándo","Where and since when") : L("Por ejemplo: rodilla derecha, desde agosto","For example: right knee, since August")},
+    h:L("Dónde y desde cuándo","Where and since when")},
   ...(full ? [{id:"injuries_12m",type:"textarea",l:L("Lesiones en los últimos 12 meses","Injuries in the last 12 months"),h:L("Dónde y cuánto tiempo sin correr","Where and how long you stopped running")},
               {id:"surgeries",type:"text",l:L("Cirugías relevantes","Relevant surgeries")}] : []),
 ]});
-const S_NOW = {key:"now", eyebrow:L("Hoy","Today"), h:L("¿Cómo te mueves hoy?","How active are you today?"),
-  p:L("No hay respuesta incorrecta. Esto define por dónde empieza tu plan","There's no wrong answer. This sets where your plan begins"), q:[
+const S_NOW = {key:"now", eyebrow:L("Hoy","Today"), h:L("¿Cómo te mueves hoy?","How active are you today?"), q:[
   {id:"activity",type:"one",stack:1,req:1,opts:[
     ["none",L("Todavía no corro","I don't run yet"),L("Camino, o hago poco ejercicio","I walk, or exercise a little")],
     ["walkrun",L("Camino y troto a ratos","I walk and jog a bit"),L("Puedo trotar unos minutos y descanso caminando","I can jog a few minutes, then walk to recover")],
     ["run30",L("Puedo correr 30 minutos seguidos","I can run 30 minutes non-stop"),L("Pero todavía no corro seguido","But I don't run regularly yet")]]},
 ]};
-const S_GOAL_BEG = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("¿Qué te gustaría lograr?","What would you like to achieve?"), q:[
+const S_GOAL_BEG = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("Tu meta","Your goal"), q:[
   {id:"goal_choice",type:"one",stack:1,req:1,opts:[
-    ["first5k",L("Correr mis primeros 5 km","Run my first 5K"),L("Sin parar, a ritmo fijo","Non-stop, at a steady pace")],
-    ["health",L("Sentirme mejor","Feel better"),L("Crear un hábito: más energía y mejor condición","Build a habit: more energy and better fitness")],
-    ["race",L("Prepararme para una carrera","Train for a race"),L("Ya tengo una en mente","I have one in mind")]]},
+    ["first5k",L("Correr mis primeros 5 km","Run my first 5K"),null],
+    ["health",L("Sentirme mejor","Feel better"),null],
+    ["race",L("Prepararme para una carrera","Train for a race"),null]]},
   {id:"race_name",type:"text",l:L("Nombre de la carrera","Race name"),show:a=>a.goal_choice==="race"},
   {...RACE_TYPE, show:a=>a.goal_choice==="race"},
   RACE_TYPE_OTHER(a=>a.goal_choice==="race" && a.race_type==="other"),
   {grid:[{id:"race_date",type:"date",l:L("Fecha","Date"),min:new Date().toISOString().slice(0, 10)},
          {id:"race_distance",type:"one",l:L("Distancia","Distance"),opts:[["5K",L("5K","5K")],["10K",L("10K","10K")],["21K",L("21K","Half")],["other",L("Otra","Other")]]}],show:a=>a.goal_choice==="race"},
   DIST_OTHER(a=>a.goal_choice==="race" && a.race_distance==="other"),
-  {id:"goal_why",type:"textarea",l:L("¿Qué te motiva a correr?","What motivates you to run?"),h:L("Una línea basta. Nos ayuda a motivarte","One line is enough. It helps us keep you going")},
+  {id:"goal_why",type:"textarea",l:L("¿Qué te motiva a correr?","What motivates you to run?")},
 ]};
-const S_WEEK_BEG = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("¿Cuándo puedes entrenar?","When can you train?"), q:[
-  {id:"run_days",type:"days",req:1,l:L("Días que puedes salir","Days you can go out"),h:L("Tres días es perfecto para empezar","Three days is perfect to start")},
+const S_WEEK_BEG = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("Tu semana","Your week"), q:[
+  {id:"run_days",type:"days",req:1,l:L("Días que puedes salir","Days you can go out")},
   {id:"session_time",type:"one",req:1,l:L("Tiempo por sesión","Time per session"),opts:[["30",L("20–30 min","20–30 min")],["45",L("30–45 min","30–45 min")],["60",L("45–60 min","45–60 min")],["90",L("Más de 1 h","Over 1 h")]]},
   {id:"time_of_day",type:"one",l:L("¿A qué hora?","What time of day?"),opts:[["morning",L("Mañana","Morning")],["midday",L("Mediodía","Midday")],["evening",L("Tarde o noche","Evening")],["varies",L("Varía","It varies")]]},
 ]};
-const S_WATCH_BEG = {key:"watch", eyebrow:L("Tu reloj","Your watch"), h:L("¿Con qué reloj entrenas?","Which watch do you train with?"), q:[
+const S_WATCH_BEG = {key:"watch", eyebrow:L("Tu reloj","Your watch"), h:L("Tu reloj","Your watch"), q:[
   WATCH_BRAND, WATCH_MODEL,
 ]};
 const TRAIN_TYPES = [["easy",L("Trote suave (ritmo cómodo, puedes platicar)","Easy runs (conversational pace)")],["long",L("Tiradas largas","Long runs")],["intervals",L("Series / intervalos","Intervals")],
   ["tempo",L("Tempo / ritmo sostenido","Tempo runs")],["hills",L("Cuestas","Hills")],["track",L("Pista","Track")],["trail",L("Trail / montaña","Trail")],
   ["treadmill",L("Caminadora","Treadmill")],["group",L("Correr en grupo","Group runs")],["strength",L("Fuerza / gimnasio","Strength / gym")]];
-const S_RUNNING = {key:"running", eyebrow:L("Tu historial","Your running"), h:L("Cuéntanos cómo corres","Tell us how you run"), q:[
+const S_RUNNING = {key:"running", eyebrow:L("Tu historial","Your running"), h:L("Cómo corres","How you run"), q:[
   {id:"platforms",type:"many",l:L("¿Qué apps usas para registrar tus carreras?","Which apps do you log your runs with?"),
-    h:L("Si usas Garmin Connect, intervals.icu o TrainingPeaks, sacamos tu historial de ahí y te preguntamos menos","If you use Garmin Connect, intervals.icu or TrainingPeaks, we pull your history from there and ask you less"),
     opts:[["garmin_connect",L("Garmin Connect","Garmin Connect")],["intervals",L("intervals.icu","intervals.icu")],["trainingpeaks",L("TrainingPeaks","TrainingPeaks")],["strava",L("Strava","Strava")],["none",L("Ninguna","None")]]},
-  {id:"km_week_3m",type:"one",req:1,l:L("¿Cuántos km corres por semana?","How many km do you run per week?"),h:L("Promedio de los últimos 3 meses. Un aproximado basta","Average over the last 3 months. A rough answer is fine"),
+  {id:"km_week_3m",type:"one",req:1,l:L("¿Cuántos km corres por semana?","How many km do you run per week?"),h:L("Promedio de los últimos 3 meses","Average over the last 3 months"),
     opts:[["5",L("Menos de 10","Under 10")],["15",L("10–20","10–20")],["27",L("20–35","20–35")],["42",L("35–50","35–50")],["60",L("50–70","50–70")],["80",L("Más de 70","Over 70")]]},
   {id:"years_running",type:"one",l:L("¿Cuánto tiempo llevas corriendo?","How long have you been running?"),
     opts:[["<1",L("Menos de 1 año","Under 1 year")],["1-3",L("1–3 años","1–3 years")],["3-5",L("3–5 años","3–5 years")],["5+",L("Más de 5 años","Over 5 years")]]},
-  {id:"auto_note",type:"info",show:HAS_DATA,text:L("Listo: tu carrera más larga, tus mejores tiempos y tu sueño los tomamos de tu historial cuando conectemos tu cuenta","Great: your longest run, best times and sleep come from your history once we connect your account")},
+  {id:"auto_note",type:"info",show:HAS_DATA,text:L("Tus tiempos, distancias y sueño los tomamos de tu historial","We'll take your times, distances and sleep from your history")},
   {id:"longest_run_recent_km",type:"number",l:L("Tu carrera más larga del último mes (km)","Longest run in the last month (km)"),show:a=>!HAS_DATA(a)},
-  {grid:[{id:"best_5k",type:"text",l:L("Mejor 5K reciente","Best recent 5K"),h:L("mm:ss","mm:ss"),ph:"24:30"},{id:"best_10k",type:"text",l:L("Mejor 10K reciente","Best recent 10K"),h:L("mm:ss","mm:ss"),ph:"51:00"}],show:a=>!HAS_DATA(a)},
-  {grid:[{id:"best_hm",type:"text",l:L("Mejor medio maratón","Best half marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"1:52:00"},{id:"best_m",type:"text",l:L("Mejor maratón","Best marathon"),h:L("h:mm:ss","h:mm:ss"),ph:"3:59:00"}],show:a=>!HAS_DATA(a)},
+  {grid:[{id:"best_5k",type:"text",l:L("Mejor 5K reciente","Best recent 5K"),ph:"24:30"},{id:"best_10k",type:"text",l:L("Mejor 10K reciente","Best recent 10K"),ph:"51:00"}],show:a=>!HAS_DATA(a)},
+  {grid:[{id:"best_hm",type:"text",l:L("Mejor medio maratón","Best half marathon"),ph:"1:52:00"},{id:"best_m",type:"text",l:L("Mejor maratón","Best marathon"),ph:"3:59:00"}],show:a=>!HAS_DATA(a)},
   {id:"best_race_date",type:"date",l:L("Fecha de tu carrera más reciente","Date of your most recent race"),max:new Date().toISOString().slice(0, 10),show:a=>!HAS_DATA(a)},
 ]};
-const S_OTHER = {key:"other", eyebrow:L("Otros deportes","Other sports"), h:L("Lo que haces además de correr","What you do besides running"), q:[
+const S_OTHER = {key:"other", eyebrow:L("Otros deportes","Other sports"), h:L("Otros deportes","Other sports"), q:[
   {id:"gym_days",type:"days",l:L("Gimnasio","Gym")},
   {id:"swim_days",type:"days",l:L("Natación","Swimming")},
   {id:"spin_days",type:"days",l:L("Bici o spinning","Bike or spin")},
@@ -369,7 +358,7 @@ const S_OTHER = {key:"other", eyebrow:L("Otros deportes","Other sports"), h:L("L
   {id:"facilities",type:"many",l:L("Tienes acceso a","You have access to"),opts:[["track",L("Pista","Track")],["treadmill",L("Caminadora","Treadmill")],["spin_bike",L("Bici fija","Spin bike")],["pool",L("Alberca","Pool")],["gym",L("Gimnasio","Gym")]]},
   {id:"coached_before",type:"text",l:L("¿Has tenido entrenador antes? ¿Cómo te fue?","Coached before? How did it go?")},
 ]};
-const S_GOAL_RUN = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("¿Hacia dónde vamos?","Where are we headed?"), q:[
+const S_GOAL_RUN = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("Tu meta","Your goal"), q:[
   {id:"goal_type",type:"one",req:1,l:L("Tu objetivo principal","Your main goal"),opts:[["race",L("Una carrera","A race")],["fitness",L("Condición general","General fitness")]]},
   {grid:[{id:"race_name",type:"text",l:L("Nombre de la carrera","Race name")},{id:"race_date",type:"date",l:L("Fecha","Date"),min:new Date().toISOString().slice(0, 10)}],show:a=>a.goal_type==="race"},
   {...RACE_TYPE, show:a=>a.goal_type==="race"},
@@ -380,18 +369,17 @@ const S_GOAL_RUN = {key:"goal", eyebrow:L("Tu meta","Your goal"), h:L("¿Hacia d
   {id:"goal_why",type:"textarea",l:L("¿Qué te motiva a correr?","What motivates you to run?")},
   {id:"success_3m",type:"textarea",l:L("¿Qué sería un éxito en 3 meses?","What would success look like in 3 months?")},
 ]};
-const S_WEEK_RUN = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("Tu disponibilidad","Your availability"), q:[
-  {id:"run_days",type:"days",req:1,l:L("Días que puedes correr","Days you can run"),h:L("Marca todos los días en que podrías correr. Abajo, de esos días, eliges cuál es para la carrera larga y cuál para la sesión intensa","Tick every day you could run. Below, from those days, you choose which one is for the long run and which for the hard session")},
-  {id:"long_run_day",type:"day1",l:L("Día para la carrera larga","Long-run day"),h:L("Tu carrera más larga de la semana, a ritmo cómodo","Your longest run of the week, at an easy pace")},
+const S_WEEK_RUN = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("Tu semana","Your week"), q:[
+  {id:"run_days",type:"days",req:1,l:L("Días que puedes correr","Days you can run"),h:L("Marca todos los que puedas","Tick every day you can")},
+  {id:"long_run_day",type:"day1",l:L("Día para la carrera larga","Long-run day")},
   {id:"quality_day",type:"day1",l:L("Día para la sesión intensa","Hard-session day"),
-    h:L("Series, tempo o cuestas: la sesión más exigente. No puede ser el mismo día que la larga; idealmente deja un día de por medio para llegar fresco a las dos",
-        "Intervals, tempo or hills: the toughest session. It can't be the long-run day; ideally leave a day in between so you arrive fresh for both")},
+    h:L("Series, tempo o cuestas. Distinto a la larga","Intervals, tempo or hills. Not the long-run day")},
   {id:"time_of_day",type:"one",l:L("Horario habitual","Usual time of day"),opts:[["morning",L("Mañana","Morning")],["midday",L("Mediodía","Midday")],["evening",L("Tarde o noche","Evening")],["varies",L("Varía","It varies")]]},
-  {id:"max_weekday_min",type:"one",l:L("Tiempo por sesión entre semana","Time per session on weekdays"),h:L("Lo que tienes para UNA sesión, no el total de la semana","What you have for ONE session, not the week's total"),
+  {id:"max_weekday_min",type:"one",l:L("Tiempo por sesión entre semana","Time per session on weekdays"),
     opts:[["30",L("Hasta 30 min","Up to 30 min")],["45",L("30–45 min","30–45 min")],["60",L("45–60 min","45–60 min")],["90",L("Más de 1 h","Over 1 h")]]},
-  {id:"max_weekend_min",type:"one",l:L("Tiempo para la carrera larga","Time for the long run"),h:L("Lo máximo que puedes dedicar a esa sesión","The most you can give that one session"),
+  {id:"max_weekend_min",type:"one",l:L("Tiempo para la carrera larga","Time for the long run"),
     opts:[["60",L("Hasta 1 h","Up to 1 h")],["90",L("1–1.5 h","1–1.5 h")],["120",L("1.5–2 h","1.5–2 h")],["180",L("Más de 2 h","Over 2 h")],["unknown",L("No sé","Not sure")]]},
-  {id:"commitments",type:"many",l:L("Tu día a día","Your day-to-day"),h:L("Elige las que apliquen","Pick any that apply"),opts:[
+  {id:"commitments",type:"many",l:L("Tu día a día","Your day-to-day"),opts:[
     ["office",L("Trabajo con horario fijo","Fixed work hours")],["flex",L("Horario flexible / home office","Flexible hours / remote")],
     ["shifts",L("Mi horario cambia cada semana","My schedule changes week to week")],["night",L("Trabajo de noche","I work nights")],
     ["student",L("Estudiante","Student")],["family",L("Hijos o familia a mi cargo","Kids or family to care for")],
@@ -399,46 +387,41 @@ const S_WEEK_RUN = {key:"week", eyebrow:L("Tu semana","Your week"), h:L("Tu disp
   {id:"commitments_other",type:"text",l:L("¿Cuál?","Which?"),show:a=>(a.commitments||"").split(", ").includes("other")},
   {id:"travel",type:"trips",l:L("Viajes ya planeados","Planned trips")},
 ]};
-const S_RECOVERY = {key:"recovery", eyebrow:L("Recuperación","Recovery"), h:L("Descanso y día a día","Rest and everyday life"), q:[
+const S_RECOVERY = {key:"recovery", eyebrow:L("Recuperación","Recovery"), h:L("Recuperación","Recovery"), q:[
   {id:"sleep_hours",type:"one",l:L("¿Cuánto duermes por noche?","How much do you sleep a night?"),opts:[["5.5",L("Menos de 6 h","Under 6 h")],["6.5",L("6–7 h","6–7 h")],["7.5",L("7–8 h","7–8 h")],["8.5",L("Más de 8 h","Over 8 h")]],show:a=>!HAS_DATA(a)},
   {id:"sleep_quality",type:"one",l:L("¿Cómo duermes?","How well do you sleep?"),opts:[["good",L("Bien, despierto descansado","Well, I wake up rested")],["ok",L("Regular","So-so")],["poor",L("Mal, me cuesta dormir o despierto cansado","Poorly, I struggle to sleep or wake up tired")]]},
   {id:"stress",type:"one",l:L("Estrés en el trabajo o escuela","Work or school stress"),opts:[["low",L("Bajo","Low")],["medium",L("Medio","Medium")],["high",L("Alto","High")]]},
   {id:"alcohol",type:"one",l:L("Alcohol","Alcohol"),opts:[["never",L("Nunca","Never")],["occasional",L("Ocasional","Occasional")],["weekly",L("Cada semana","Weekly")],["frequent",L("Varias veces por semana","Several times a week")]]},
 ]};
-const S_WATCH_RUN = {key:"watch", eyebrow:L("Reloj y preferencias","Watch and preferences"), h:L("Tu reloj y tus gustos","Your watch and what you like"), q:[
+const S_WATCH_RUN = {key:"watch", eyebrow:L("Reloj y preferencias","Watch and preferences"), h:L("Tu reloj","Your watch"), q:[
   WATCH_BRAND, WATCH_MODEL,
   {id:"likes",type:"many",l:L("¿Qué tipo de entrenamiento disfrutas más?","Which kinds of training do you enjoy most?"),opts:TRAIN_TYPES},
   {id:"dislikes",type:"many",l:L("¿Qué tipo de entrenamiento prefieres evitar?","Which kinds of training would you rather avoid?"),opts:TRAIN_TYPES},
 ]};
 const BRAND_NAMES = {apple:"Apple Watch",coros:"COROS",suunto:"Suunto",polar:"Polar",other:""};
-const S_CONNECT = {key:"connect", eyebrow:L("Conexión","Connection"), h:L("Tus entrenamientos en tu reloj","Your workouts on your watch"), q:[
+const S_CONNECT = {key:"connect", eyebrow:L("Conexión","Connection"), h:L("Conecta tu reloj","Connect your watch"), q:[
   {id:"connect_garmin_note",type:"info",show:a=>a.watch_brand==="garmin",
-    text:L("Tu plan llega a tu Garmin a través de intervals.icu, un servicio gratuito. Puedes conectarlo ahora o hacerlo con tu coach en la llamada",
-           "Your plan reaches your Garmin through intervals.icu, a free service. Connect it now, or do it with your coach on the call")},
+    text:L("Tu plan llega a tu Garmin vía intervals.icu (gratis)","Your plan reaches your Garmin via intervals.icu (free)")},
   {id:"connect_other_note",type:"info",show:a=>a.watch_brand && a.watch_brand!=="garmin",
     text:a => a.watch_brand==="none"
-      ? L("Sin reloj también se puede: recibes cada sesión por correo y la sigues con tu celular. Tu coach te explica en la llamada",
-          "No watch is fine: you get each session by email and follow it on your phone. Your coach explains on the call")
-      : L(`Con tu ${BRAND_NAMES[a.watch_brand] || "reloj"} lo configuramos juntos en la llamada; cada marca recibe los entrenamientos de forma distinta. No tienes que hacer nada ahora`,
-          `We'll set up your ${BRAND_NAMES[a.watch_brand] || "watch"} together on the call; each brand receives workouts differently. Nothing to do now`)},
+      ? L("Sin reloj también se puede: recibes cada sesión por correo","No watch is fine: you get each session by email")
+      : L(`Tu ${BRAND_NAMES[a.watch_brand] || "reloj"} lo configuramos en la llamada`,`We'll set up your ${BRAND_NAMES[a.watch_brand] || "watch"} on the call`)},
   {id:"setup",type:"one",stack:1,req:1,show:a=>a.watch_brand==="garmin",opts:[
-    ["call",L("Lo hago con mi coach en la llamada","I'll do it with my coach on the call"),L("Recomendado si es tu primera vez","Recommended if this is new to you")],
-    ["now",L("Lo hago ahora","I'll do it now"),L("Toma unos 3 minutos","Takes about 3 minutes")]]},
+    ["call",L("Lo hago con mi coach en la llamada","I'll do it with my coach on the call"),L("Recomendado","Recommended")],
+    ["now",L("Lo hago ahora","I'll do it now"),L("3 minutos","3 minutes")]]},
   {id:"setup_need",type:"info",show:a=>a.watch_brand==="garmin" && a.setup==="now",
-    text:L("Necesitas tu correo y contraseña de Garmin Connect. Son 4 pasos, unos 3 minutos. Si te atoras, lo terminamos en la llamada",
-           "You need your Garmin Connect email and password. 4 steps, about 3 minutes. If you get stuck, we finish it on the call")},
+    text:L("Ten a la mano tu cuenta de Garmin Connect. Si te atoras, lo terminamos en la llamada","Have your Garmin Connect login handy. If you get stuck, we finish it on the call")},
   {id:"setup_steps",type:"steps",show:a=>a.watch_brand==="garmin" && a.setup==="now"},
-  {id:"icu_athlete_id",type:"text",l:L("Tu ID de intervals.icu","Your intervals.icu ID"),ph:"i123456",h:L("Empieza con i, seguido de números","Starts with i, followed by digits"),show:a=>a.watch_brand==="garmin" && a.setup==="now"},
+  {id:"icu_athlete_id",type:"text",l:L("Tu ID de intervals.icu","Your intervals.icu ID"),ph:"i123456",show:a=>a.watch_brand==="garmin" && a.setup==="now"},
 ]};
-const S_CONSENT = {key:"consent", eyebrow:L("Último paso","Final step"), h:L("Últimos detalles","Final details"), q:[
+const S_CONSENT = {key:"consent", eyebrow:L("Último paso","Final step"), h:L("Último paso","Final step"), q:[
   {id:"email_frequency",type:"one",stack:1,req:1,l:L("¿Cada cuándo quieres tus entrenamientos por correo?","How often do you want your workouts by email?"),opts:[
-    ["daily",L("Cada día","Every day"),L("La sesión del día, por la mañana","That day's session, in the morning")],
-    ["weekly",L("Una vez a la semana","Once a week"),L("Un resumen el lunes","A summary on Monday")]]},
+    ["daily",L("Cada día","Every day"),L("Por la mañana","In the morning")],
+    ["weekly",L("Una vez a la semana","Once a week"),L("Los lunes","On Mondays")]]},
   {id:"consent",type:"consent",req:1,head:L("Acepto los términos y condiciones","I accept the terms and conditions"),l:L("Entreno bajo mi propio riesgo y avisaré a mi coach si tengo dolor, una lesión o una enfermedad. Mis datos se usan solo para entrenarme y se borran si lo pido",
     "I train at my own risk and will tell my coach about any pain, injury or illness. My data is used only for my training and is deleted on request")},
 ]};
-const S_PILOT = {key:"pilot", eyebrow:L("Tu opinión","Your opinion"), h:L("Tres preguntas rápidas","Three quick questions"),
-  p:L("Es una versión de prueba. Tu opinión nos ayuda a mejorarla antes de abrir ARION","This is a test version. Your opinion helps us improve it before ARION opens"), q:[
+const S_PILOT = {key:"pilot", eyebrow:L("Tu opinión","Your opinion"), h:L("Tu opinión","Your opinion"), q:[
   {id:"pilot_ease",type:"one",req:1,l:L("¿Qué tan fácil fue llenarlo?","How easy was it to fill in?"),h:L("1 = muy confuso · 5 = muy fácil","1 = very confusing · 5 = very easy"),
    opts:[["1",L("1","1")],["2",L("2","2")],["3",L("3","3")],["4",L("4","4")],["5",L("5","5")]]},
   {id:"pilot_confusing",type:"textarea",l:L("¿Algo confuso, que sobre o que falte?","Anything confusing, unnecessary or missing?")},
@@ -583,7 +566,7 @@ function field(q) {
 /* ---- Screens ---- */
 function renderWelcome() {
   const sc = el("div", {class: "screen"});
-  sc.append(el("header", {}, [el("p", {class: "title-gr"}, [el("span", {text: "ΑΡΙΩΝ", lang: "grc"}), el("small", {class: "paren", text: "(Arion)"})]), el("p", {class: "eyebrow", text: t(T.welcomeEyebrow)}), el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
+  sc.append(el("header", {}, [el("p", {class: "title-gr"}, [el("span", {text: "ΑΡΙΩΝ", lang: "grc"}), el("small", {class: "paren", text: "(Arion)"})]), el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
   const paths = el("div", {class: "paths", role: "group", "aria-label": t(T.pathQ)});
   [["beginner", T.begT, T.begS, T.begI], ["runner", T.runT, T.runS, T.runI]].forEach(([p, h, s, i]) => {
     const b = el("button", {type: "button", class: "path", id: "path-" + p}, [el("strong", {text: t(h)}), el("small", {text: t(s)}), el("i", {text: t(i)})]);
@@ -591,7 +574,6 @@ function renderWelcome() {
     paths.append(b);
   });
   sc.append(el("h2", {text: t(T.pathQ)}), paths);
-  sc.append(el("ul", {class: "reassure"}, [[T.r1h, T.r1p], [T.r2h, T.r2p], [T.r3h, T.r3p]].map(([h, p]) => el("li", {}, [el("b", {text: t(h)}), document.createTextNode(t(p))]))));
   if (PILOT) sc.append(el("p", {class: "note", text: t(T.pilotNote)}));
   sc.append(el("p", {class: "motto"}, [el("span", {text: "σπεῦδε βραδέως", lang: "grc"}), document.createTextNode(" "), el("small", {class: "paren", text: t(T.motto)})]));
   return sc;
@@ -599,7 +581,7 @@ function renderWelcome() {
 function renderStep() {
   const sc = FLOWS[st.path][st.step];
   const box = el("div", {class: "screen"});
-  box.append(el("header", {}, [el("p", {class: "eyebrow", text: t(sc.eyebrow)}), el("h2", {text: t(sc.h)}), sc.p ? el("p", {class: "note", text: t(sc.p)}) : null]));
+  box.append(el("header", {}, [el("h2", {text: t(sc.h)}), sc.p ? el("p", {class: "note", text: t(sc.p)}) : null]));
   sc.q.forEach(q => {
     if (!visible(q)) return;
     if (q.grid) box.append(el("div", {class: "grid2"}, q.grid.map(field)));
@@ -610,7 +592,7 @@ function renderStep() {
 }
 function renderDone() {
   const box = el("div", {class: "screen"});
-  const head = (eb, h, p) => box.append(el("header", {}, [el("p", {class: "eyebrow", text: t(eb)}), el("h1", {html: t(h)}), p ? el("p", {class: "lede", text: t(p)}) : null]));
+  const head = (eb, h, p) => box.append(el("header", {}, [el("h1", {html: t(h)}), p ? el("p", {class: "lede", text: t(p)}) : null]));
   const nextSteps = () => box.append(el("div", {style: "display:grid;gap:18px;border-top:1px solid var(--line);padding-top:24px"}, [
     el("p", {class: "eyebrow", text: t(T.nextH)}),
     el("ol", {class: "next"}, [T.n1, T.n2, T.n3].map((n, i) => el("li", {}, [el("span", {text: String(i + 1)}), el("div", {text: t(n)})])))]));
