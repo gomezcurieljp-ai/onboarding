@@ -222,7 +222,11 @@ details[open] summary { margin-bottom: 10px }
 const BRAND = "ARION";
 /* Web3Forms access key (web3forms.com, free). It only lets this form email the coach; it's public by design.
    Empty = no automatic email, athletes send on WhatsApp instead. Inside claude.ai the send is blocked and falls back too. */
-const FORM_KEY = /\.github\.io$/.test(location.hostname) ? "fd6935b4-2170-468d-92b2-a93427f18dab" : "";   // add a custom domain here later
+/* Two keys: real sign-ups go to the team inbox (arionrc.coach@gmail.com), where GitHub turns them into
+   profiles; pilot (?piloto=1) and review (?review=1) answers keep going to JP's personal inbox. */
+const KEY_TEAM = "ef7a278d-d689-461b-bb60-d2ef6d7045ba", KEY_JP = "fd6935b4-2170-468d-92b2-a93427f18dab";
+const FORM_KEY = !/\.github\.io$/.test(location.hostname) ? ""                       // add a custom domain here later
+  : /[?&](piloto|review|feedback)=1\b/.test(location.search) ? KEY_JP : KEY_TEAM;
 
 const L = (es, en) => ({es, en});
 const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
