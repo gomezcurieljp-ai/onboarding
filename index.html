@@ -221,7 +221,7 @@ details[open] summary { margin-bottom: 10px }
 /* ---- Brand: ARION (branding/brand-identity.md). Name without accent. ---- */
 const BRAND = "ARION";
 /* Web3Forms access key (web3forms.com, free). It only lets this form email the coach; it's public by design.
-   Empty = no automatic email, athletes send on WhatsApp instead. Inside claude.ai the send is blocked and falls back too. */
+   Empty = no automatic email: the athlete copies the message and emails the team. */
 /* Two keys: real sign-ups go to the team inbox (arionrc.coach@gmail.com), where GitHub turns them into
    profiles; pilot (?piloto=1) and review (?review=1) answers keep going to JP's personal inbox. */
 const KEY_TEAM = "ef7a278d-d689-461b-bb60-d2ef6d7045ba", KEY_JP = "fd6935b4-2170-468d-92b2-a93427f18dab";
@@ -275,7 +275,7 @@ const T = {
   addTrip: L("+ Otro viaje","+ Another trip"), removeTrip: L("Quitar","Remove"),
   doneEyebrow: L("Inscripción recibida","Registration received"), sendEyebrow: L("Un paso más","One more step"),
   doneH: L("Envía tus respuestas <em>a Coach JP</em>","Send your answers <em>to Coach JP</em>"),
-  doneP: L("Toca el botón y envía el mensaje tal cual","Tap the button and send the message as it is"),
+  doneP: L("Copia el mensaje y envíalo a arionrc.coach@gmail.com","Copy the message and send it to arionrc.coach@gmail.com"),
   wa: L("Enviar por WhatsApp","Send on WhatsApp"), copy: L("Copiar mensaje","Copy message"),
   copied: L("Copiado. Pégalo en el chat con Coach JP","Copied. Paste it into the chat with Coach JP"),
   copyFail: L("Selecciona el texto de abajo y cópialo","Select the text below and copy it"),
@@ -288,7 +288,7 @@ const T = {
   sendingH: L("Enviando…","Sending…"),
   sentH: L("Gracias <em>Ya recibimos tus respuestas</em>","Thank you <em>We have your answers</em>"),
   sentP: L("Coach JP te escribe pronto","Coach JP will be in touch soon"),
-  failP: L("No pudimos enviarlo automáticamente. Inténtalo otra vez o mándalo por WhatsApp","We couldn't send it automatically. Try again, or send it on WhatsApp"),
+  failP: L("No pudimos enviarlo. Inténtalo otra vez, o copia el mensaje y envíalo a arionrc.coach@gmail.com","We couldn't send it. Try again, or copy the message and send it to arionrc.coach@gmail.com"),
   retry: L("Reintentar envío","Try again"),
   restart: L("Empezar de nuevo","Start over"), restartSure: L("Toca otra vez para borrar todo","Tap again to erase everything"),
 };
@@ -656,13 +656,13 @@ function renderDone() {
     nextSteps(); box.append(restartBtn()); return box;
   }
 
-  // Fallback: automatic send unavailable or failed -> WhatsApp / copy
+  // Fallback: automatic send unavailable or failed -> retry / copy
   const text = message();
   head(T.sendEyebrow, T.doneH, FORM_KEY ? T.failP : T.doneP);
   const actions = [];
   if (FORM_KEY) { const r = el("button", {type: "button", class: "btn primary", id: "retry", text: t(T.retry)}); r.addEventListener("click", submitAll); actions.push(r); }
-  actions.push(el("a", {class: FORM_KEY ? "btn line" : "btn primary", href: "https://wa.me/?text=" + encodeURIComponent(text), target: "_blank", rel: "noopener", style: "text-decoration:none", text: t(T.wa) + " →"}));
-  const copy = el("button", {type: "button", class: "btn line", id: "copy", text: t(T.copy)});
+  // No WhatsApp: ARION has no WhatsApp number yet (JP, 24 nov). Fallback = retry, or copy and email the team.
+  const copy = el("button", {type: "button", class: FORM_KEY ? "btn line" : "btn primary", id: "copy", text: t(T.copy)});
   const note = el("span", {class: "saved", id: "copied", "aria-live": "polite"});
   const pre = el("pre", {class: "block", id: "out", tabindex: "0", text});
   const det = el("details", {}, [el("summary", {text: t(T.showMsg)}), pre]);
