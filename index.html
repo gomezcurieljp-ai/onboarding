@@ -259,7 +259,8 @@ const T = {
   pathQ: L("¿Dónde estás hoy?","Where are you today?"),
   pilotNote: L("Versión de prueba · al final, 3 preguntas","Test version · 3 questions at the end"),
   motto: L("(avanza con constancia: la paciencia te lleva más lejos que la prisa · César Augusto)","(keep a steady pace: patience takes you further than haste · Augustus)"),
-  begT: L("Estoy empezando","I'm just starting"), begS: L("Nunca he corrido o regreso tras una pausa larga","Never run, or back after a long break"), begI: L("5 min","5 min"),
+  begT: L("Estoy empezando","I'm just starting"), begS: L("Nunca he corrido o casi no corro","I've never run, or barely run"), begI: L("5 min","5 min"),
+  backT: L("Vuelvo a correr","I'm getting back to running"), backS: L("Ya corrí antes (incluso carreras largas) y hoy retomo","I ran before (even long races) and I'm picking it up again"), backI: L("10 min","10 min"),
   runT: L("Ya corro","I already run"), runS: L("Corro seguido y aguanto 30 min sin parar","I run regularly, 30 min non-stop"), runI: L("10 min","10 min"),
   step: L("Paso","Step"), of: L("de","of"),
   back: L("Atrás","Back"), next: L("Continuar","Continue"), finish: L("Terminar","Finish"),
@@ -596,9 +597,14 @@ function renderWelcome() {
   const sc = el("div", {class: "screen"});
   sc.append(el("header", {}, [el("h1", {html: t(T.welcomeH)}), el("p", {class: "lede", text: t(T.welcomeP)})]));
   const paths = el("div", {class: "paths", role: "group", "aria-label": t(T.pathQ)});
-  [["beginner", T.begT, T.begS, T.begI], ["runner", T.runT, T.runS, T.runI]].forEach(([p, h, s, i]) => {
+  /* "Vuelvo a correr" uses the runner questions (history, best times, time off) and is flagged as a comeback. */
+  [["beginner", T.begT, T.begS, T.begI], ["comeback", T.backT, T.backS, T.backI], ["runner", T.runT, T.runS, T.runI]].forEach(([p, h, s, i]) => {
     const b = el("button", {type: "button", class: "path", id: "path-" + p}, [el("strong", {text: t(h)}), el("small", {text: t(s)}), el("i", {text: t(i)})]);
-    b.addEventListener("click", () => { st.path = p; st.step = 0; save(); render(); scrollTo(0, 0); });
+    b.addEventListener("click", () => {
+      st.path = p === "comeback" ? "runner" : p; st.step = 0;
+      if (p === "comeback") st.a.returning = "yes"; else delete st.a.returning;
+      save(); render(); scrollTo(0, 0);
+    });
     paths.append(b);
   });
   sc.append(el("h2", {text: t(T.pathQ)}), paths);
